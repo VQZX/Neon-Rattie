@@ -1,10 +1,10 @@
 # Add any directories, files, or patterns you don't want to be tracked by version control
-/[Ll]ibrary/
-/[Tt]emp/
-/[Oo]bj/
-/[Bb]uild/
-/[Bb]uilds/
-/Assets/AssetStoreTools*
+NeonRattie/[Ll]ibrary/
+NeonRattie/[Tt]emp/
+NeonRattie/[Oo]bj/
+NeonRattie/[Bb]uild/
+NeonRattie/[Bb]uilds/
+NeonRattie/Assets/AssetStoreTools*
 
 # Visual Studio 2015 cache directory
 /.vs/
