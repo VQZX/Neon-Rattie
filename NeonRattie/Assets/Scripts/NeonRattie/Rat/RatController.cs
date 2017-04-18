@@ -1,14 +1,20 @@
-﻿using Flusk.Utility;
+﻿using NeonRattie.Rat.RateStates;
 using UnityEngine;
 
 namespace NeonRattie.Rat
 {
+    [RequireComponent( typeof(RatAnimator))]
     public class RatController : MonoBehaviour
     {
-        private StateMachine<RatStates> stateMachine = new StateMachine<RatStates>();
+        public RatAnimator RatAnimator { get; protected set; }
+
+        //other rat effects...
+
+
+        private RatStateMachine ratStateMachine = new RatStateMachine();
 
         //states
-
+        
         private void Init()
         {
             //initialise state machine
