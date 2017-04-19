@@ -1,10 +1,12 @@
 ﻿using Flusk.Utility;
 using RatBrain = NeonRattie.Rat.RatController;
 
-namespace NeonRattie.Rat.RateStates
+namespace NeonRattie.Rat.RatStates
 {
     public class RatState : IState
     {
+        public RatStateMachine StateMachine { get; set; }
+
         protected RatBrain rat;
 
         public void Init(RatBrain rat)
@@ -23,6 +25,11 @@ namespace NeonRattie.Rat.RateStates
         }
 
         public virtual void Tick()
+        {
+            
+        }
+
+        public virtual void Tick(RatStateMachine stateMachine)
         {
             
         }

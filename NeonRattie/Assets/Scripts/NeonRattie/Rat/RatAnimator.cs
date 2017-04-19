@@ -20,7 +20,24 @@ namespace NeonRattie.Rat
 
         public void PlayIdle()
         {
-            
+            Debug.Log("Play Idle");  
+        }
+
+        public void PlayWalk()
+        {
+            //probably set bool on animator here
+            Debug.Log("Play walk");
+        }
+
+        public void ExitWalk()
+        {
+            //probably reset bool on animator here
+            Debug.Log("Exit Walk");
+        }
+
+        public void PlayJump()
+        {
+            Debug.Log("Play Jump");
         }
 
         protected virtual void Awake()

@@ -4,20 +4,20 @@ namespace Flusk.Patterns
 {
     public class Singleton<T> : MonoBehaviour where T : Singleton<T>
     {
-        protected Singleton<T> instance;
+        public static T Instance { get; protected set; }
 
-        public T Instance
+        public bool InstanceExists
         {
-            get { return (T) instance; }
+            get {return Instance != null; }
         }
 
         protected virtual void Awake ()
         {
-            if (instance == null)
+            if (Instance == null)
             {
-                instance = this;
+                Instance = (T) this;
             }
-            else if (instance != this)
+            else if (Instance != this)
             {
                 Destroy(gameObject);
             }

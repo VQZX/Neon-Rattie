@@ -10,5 +10,11 @@ namespace Flusk.Utility
         {
             keyStates.Add(key, state);
         }
+
+        public virtual void ChangeState(TKey key)
+        {
+            TState state = keyStates[key];
+            base.ChangeState(state);
+        }
     }
 }

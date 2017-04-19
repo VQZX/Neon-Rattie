@@ -3,9 +3,9 @@
 //aliases
 using RatBrain = NeonRattie.Rat.RatController;
 
-namespace NeonRattie.Rat.RateStates
+namespace NeonRattie.Rat.RatStates
 {
-    public class RatStateMachine : StateMachine<RatState>
+    public class RatStateMachine : KeyStateMachine<RatActionStates, RatState>
     {
         protected RatBrain ratBrain;
 
