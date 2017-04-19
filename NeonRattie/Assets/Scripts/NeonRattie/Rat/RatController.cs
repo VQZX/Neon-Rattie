@@ -42,6 +42,11 @@ namespace NeonRattie.Rat
             return false;
         }
 
+        public bool IsGrounded()
+        {
+            return false;
+        }
+
         public void WalkForward()
         {
             if (NavAgent == null)

@@ -14,6 +14,24 @@ namespace NeonRattie.Rat.RatStates
             PlayerControls.Instance.Walk += OnWalkPressed;
         }
 
+        public override void Tick()
+        {
+            base.Tick();
+            var pc = PlayerControls.Instance;
+            if (pc != null)
+            {
+                if (pc.CheckKeyDown(pc.JumpUp))
+                {
+                    if (rat.ClimbValid())
+                    {
+                        StateMachine.ChangeState(RatActionStates.Climb);
+                        return;
+                    }
+                    StateMachine.ChangeState(RatActionStates.Jump);
+                }
+            }
+        }
+
         public override void Exit(IState previousState)
         {
             PlayerControls.Instance.Walk -= OnWalkPressed;
