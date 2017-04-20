@@ -14,8 +14,7 @@ namespace NeonRattie.Rat.RatStates
         public override void Tick()
         {
             base.Tick();
-            //HACK: just directly check 'W' for now
-            PlayerControls pc = PlayerControls.Instance;
+            PlayerControls pc = (PlayerControls.Instance as PlayerControls);
             if (pc.CheckKeyUp(pc.Forward))
             {
                 StateMachine.ChangeState(RatActionStates.Idle);

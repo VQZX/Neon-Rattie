@@ -8,7 +8,7 @@ namespace NeonRattie.Controls
 {
     //a a class for reading in input data and feeding to the avatar
     //mostly relays keypresses to certain actions
-    public class PlayerControls : Singleton<PlayerControls>
+    public class PlayerControls : PersistentSingleton<PlayerControls>
     {
         [SerializeField] protected KeyCode walkKey;
         [SerializeField] protected KeyCode runKey;
@@ -53,7 +53,7 @@ namespace NeonRattie.Controls
 
         protected virtual void Start ()
         {
-            var kc = KeyboardControls.Instance;
+            var kc = (KeyboardControls.Instance as KeyboardControls);
             if (kc == null)
             {
                 return;
@@ -62,10 +62,9 @@ namespace NeonRattie.Controls
             kc.KeyHit += InvokeRun;
             kc.KeyHit += InvokeJump;
         }
-
         protected virtual void OnDisable()
         {
-            var kc = KeyboardControls.Instance;
+            var kc = (KeyboardControls.Instance as KeyboardControls);
             if (kc == null)
             {
                 return;
@@ -79,6 +78,7 @@ namespace NeonRattie.Controls
         {
             if (action != null)
             {
+                Debug.LogFormat("Action: {0} -- value: {1}", action, value);
                 action(value);
             }
         }

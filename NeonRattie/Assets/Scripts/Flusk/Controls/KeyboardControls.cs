@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Flusk.Controls
 {
-    public class KeyboardControls : Singleton<KeyboardControls>
+    public class KeyboardControls : PersistentSingleton<KeyboardControls>
     {
         [SerializeField] protected KeyCheck[] codes;
 
@@ -12,7 +12,11 @@ namespace Flusk.Controls
 
         protected virtual void Start()
         {
-
+            var count = codes.Length;
+            for (var i = 0; i < count; ++i)
+            {
+                codes[i].Init();
+            }
         }
 
         protected virtual void Update()

@@ -5,19 +5,17 @@ namespace NeonRattie.Rat.RatStates
 {
     public class Idle : RatState
     {
-        
-
         public override void Enter(IState previousState)
         {
             base.Enter(previousState);
             rat.RatAnimator.PlayIdle();
-            PlayerControls.Instance.Walk += OnWalkPressed;
+            (PlayerControls.Instance as PlayerControls).Walk += OnWalkPressed;
         }
 
         public override void Tick()
         {
             base.Tick();
-            var pc = PlayerControls.Instance;
+            var pc = (PlayerControls.Instance as PlayerControls);
             if (pc != null)
             {
                 if (pc.CheckKeyDown(pc.JumpUp))
@@ -34,7 +32,7 @@ namespace NeonRattie.Rat.RatStates
 
         public override void Exit(IState previousState)
         {
-            PlayerControls.Instance.Walk -= OnWalkPressed;
+            (PlayerControls.Instance as PlayerControls).Walk -= OnWalkPressed;
         }
 
         private void OnWalkPressed(float axisValue)

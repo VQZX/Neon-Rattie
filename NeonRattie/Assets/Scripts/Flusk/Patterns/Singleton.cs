@@ -8,10 +8,15 @@ namespace Flusk.Patterns
 
         public bool InstanceExists
         {
-            get {return Instance != null; }
+            get { return Instance != null; }
         }
 
-        protected virtual void Awake ()
+        protected virtual void Awake()
+        {
+            Set();
+        }
+
+        protected virtual void Set()
         {
             if (Instance == null)
             {

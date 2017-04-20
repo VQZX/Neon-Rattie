@@ -39,7 +39,8 @@ namespace Flusk.Controls
 
         public bool Check()
         {
-            return stateCheck != null && stateCheck(Code);
+            bool state = stateCheck != null && stateCheck(Code);
+            return state;
         }
     }
 }

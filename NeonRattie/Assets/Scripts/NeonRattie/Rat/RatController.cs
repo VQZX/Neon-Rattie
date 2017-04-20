@@ -1,4 +1,6 @@
-﻿using NeonRattie.Rat.RatStates;
+﻿using Flusk.Management;
+using NeonRattie.Controls;
+using NeonRattie.Rat.RatStates;
 using NeonRattie.Shared;
 using UnityEngine;
 using UnityEngine.AI;
@@ -35,7 +37,14 @@ namespace NeonRattie.Rat
 
         private RatStateMachine ratStateMachine = new RatStateMachine();
 
-        //states
+        //states and keys
+        protected RatActionStates idle, jump, climb, walk;
+
+        protected Idle idling;
+        protected Jump jumping;
+        protected Climb climbing;
+        protected Walk walking;
+
 
         public bool ClimbValid()
         {
@@ -57,14 +66,20 @@ namespace NeonRattie.Rat
             NavAgent.SetDestination(transform.position + transform.forward * walkSpeed);
         }
 
-        protected virtual void Awake()
+        protected virtual void OnManagementLoaded()
         {
+            (SceneManagement.Instance as SceneManagement).Rat = this;
             NavAgent = GetComponentInChildren<NavMeshAgent>();
         }
         
         private void Init()
         {
-            //initialise state machine
+            ratStateMachine.AddState(idle, idling);
+            ratStateMachine.AddState(walk, walking);
+            ratStateMachine.AddState(jump, jumping);
+            ratStateMachine.AddState(climb, climbing);
+            ratStateMachine.ChangeState(idle);
+
         }
 
         public override void Destroy()
@@ -75,6 +90,16 @@ namespace NeonRattie.Rat
         public override void Initialise()
         {
             throw new System.NotImplementedException();
+        }
+
+        protected virtual void OnEnable()
+        {
+            MainPrefab.ManagementLoaded += OnManagementLoaded;
+        }
+
+        protected virtual void OnDisable()
+        {
+            MainPrefab.ManagementLoaded -= OnManagementLoaded;
         }
 
         protected virtual void LateUpdate()

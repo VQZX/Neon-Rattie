@@ -1,16 +1,21 @@
 ﻿#if UNITY_EDITOR
+using System.IO;
 using UnityEditor;
 using UnityEngine;
 
 namespace Flusk.Management
 {
-
-    [InitializeOnLoad]
     public class Initialisation
     {
+        private const string PATH = "MainPrefab";
+
+        [RuntimeInitializeOnLoadMethod]
         static void StartUp ()
         {
-            Debug.Log("Up and running");
+            GameObject mainPrefab = Resources.Load(PATH) as GameObject;
+            var mp = mainPrefab.GetComponent<MainPrefab>();
+            mp.ForceSet();
+            mp.Initialise();
         }
     }
 }
