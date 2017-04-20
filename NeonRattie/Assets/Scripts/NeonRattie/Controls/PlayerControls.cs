@@ -11,6 +11,7 @@ namespace NeonRattie.Controls
     public class PlayerControls : PersistentSingleton<PlayerControls>
     {
         [SerializeField] protected KeyCode walkKey;
+        [SerializeField] protected KeyCode reverseKey = KeyCode.D;
         [SerializeField] protected KeyCode runKey;
         [SerializeField] protected KeyCode jumpKey;
 
@@ -24,6 +25,9 @@ namespace NeonRattie.Controls
         protected KeyCode forward = KeyCode.W;
         public KeyCode Forward { get; protected set; }
 
+        protected KeyCode back = KeyCode.S;
+        public KeyCode Back { get; protected set; }
+
         protected KeyCode jumpUp = KeyCode.Space;
         public KeyCode JumpUp { get; protected set; }
 
@@ -33,9 +37,13 @@ namespace NeonRattie.Controls
         public event Action<float> Run;
         public event Action<float> Jump;
         public event Action<float> Unwalk;
+        public event Action<float> Reverse;
+        public event Action<float> UnReverse;
 
         public event Action Pause;
         public event Action Exit;
+
+        
 
         public bool CheckKeyDown(KeyCode code)
         {
@@ -65,11 +73,10 @@ namespace NeonRattie.Controls
             kc.KeyHit += InvokeRun;
             kc.KeyHit += InvokeJump;
             kc.KeyHit += InvokeUnWalk;
-        }
+            kc.KeyHit += InvokeUnReverse;
+            kc.KeyHit += InvokeReverse;
 
-        public virtual void Update()
-        {
-            Debug.Log("W Up -- "+Input.GetKeyUp(KeyCode.W));
+            
         }
 
         protected virtual void OnDisable()
@@ -117,6 +124,24 @@ namespace NeonRattie.Controls
                 return;
             }
             Invoke(Unwalk, data.AxisValue);
+        }
+
+        private void InvokeReverse(KeyData data)
+        {
+            if (reverseKey != data.Code || data.State != KeyState.Up)
+            {
+                return;
+            }
+            Invoke(Reverse, data.AxisValue);
+        }
+
+        private void InvokeUnReverse(KeyData data)
+        {
+            if (reverseKey != data.Code || data.State == KeyState.Up)
+            {
+                return;
+            }
+            Invoke(UnReverse, data.AxisValue);
         }
 
         private void InvokeRun(KeyData data)

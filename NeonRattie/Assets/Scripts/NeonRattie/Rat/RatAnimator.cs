@@ -26,7 +26,7 @@ namespace NeonRattie.Rat
         public void PlayWalk()
         {
             //probably set bool on animator here
-            Debug.Log("Play walk");
+            Debug.Log("Play Walk");
         }
 
         public void ExitWalk()
@@ -38,6 +38,11 @@ namespace NeonRattie.Rat
         public void PlayJump()
         {
             Debug.Log("Play Jump");
+        }
+
+        public void PlayReverse()
+        {
+            Debug.Log("Reverse");
         }
 
         protected virtual void Awake()

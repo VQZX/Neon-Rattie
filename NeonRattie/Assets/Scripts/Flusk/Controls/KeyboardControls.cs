@@ -44,5 +44,17 @@ namespace Flusk.Controls
                 }
             }
         }
+
+#if UNITY_EDITOR
+
+        protected virtual void OnValidate()
+        {
+            var count = codes.Length;
+            for (var i = 0; i < count; ++i)
+            {
+                codes[i].NameCheck();
+            }
+        }
+#endif
     }
 }

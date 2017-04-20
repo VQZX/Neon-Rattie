@@ -34,20 +34,33 @@ namespace NeonRattie.Rat
 
         //other rat effects...
 
+        private Vector3 offsetRotation;
+
+        private Vector3 ForwardDirection
+        {
+            get { return (transform.forward + offsetRotation).normalized; }
+        }
 
         private RatStateMachine ratStateMachine = new RatStateMachine();
+
+        public RatStateMachine StateMachine
+        {
+            get { return ratStateMachine; }
+        }
 
         //states and keys
         protected RatActionStates
             idle = RatActionStates.Idle,
             jump = RatActionStates.Jump,
             climb = RatActionStates.Climb,
-            walk = RatActionStates.Walk;
+            walk = RatActionStates.Walk,
+            reverse = RatActionStates.Reverse;
 
         protected Idle idling;
         protected Jump jumping;
         protected Climb climbing;
         protected Walk walking;
+        protected WalkBack reversing;
 
 
         public bool ClimbValid()
@@ -62,12 +75,12 @@ namespace NeonRattie.Rat
 
         public void WalkForward()
         {
-            if (NavAgent == null)
-            {
-                transform.Translate(Vector3.forward * walkSpeed * Time.deltaTime, Space.Self);
-                return;
-            }
-            NavAgent.SetDestination(transform.position + transform.forward * walkSpeed);
+            Walk(ForwardDirection);
+        }
+
+        public void WalkBackward()
+        {
+            Walk(-ForwardDirection);
         }
 
         protected virtual void OnManagementLoaded()
@@ -75,6 +88,17 @@ namespace NeonRattie.Rat
             (SceneManagement.Instance as SceneManagement).Rat = this;
             NavAgent = GetComponentInChildren<NavMeshAgent>();
             Init();
+            offsetRotation = new Vector3(-1, 0, 1);
+        }
+
+        private void Walk(Vector3 direction)
+        {
+            if (NavAgent == null)
+            {
+                transform.Translate(direction * walkSpeed * Time.deltaTime, Space.Self);
+                return;
+            }
+            NavAgent.SetDestination(transform.position + direction * walkSpeed);
         }
         
         private void Init()
@@ -87,18 +111,20 @@ namespace NeonRattie.Rat
             walking = new Walk();
             jumping = new Jump();
             climbing = new Climb();
+            reversing = new WalkBack();
 
             idling.Init(this, ratStateMachine);
             walking.Init(this, ratStateMachine);
             jumping.Init(this, ratStateMachine);
             climbing.Init(this, ratStateMachine);
+            reversing.Init(this, ratStateMachine);
 
             ratStateMachine.AddState(idle, idling);
             ratStateMachine.AddState(walk, walking);
             ratStateMachine.AddState(jump, jumping);
             ratStateMachine.AddState(climb, climbing);
+            ratStateMachine.AddState(reverse, reversing);
             ratStateMachine.ChangeState(idle);
-
         }
 
         public override void Destroy()

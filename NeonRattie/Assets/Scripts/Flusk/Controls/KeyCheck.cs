@@ -6,6 +6,7 @@ namespace Flusk.Controls
     [Serializable]
     public struct KeyCheck
     {
+        public string Description;
         public KeyCode Code;
         public KeyState State;
 
@@ -37,10 +38,21 @@ namespace Flusk.Controls
             }
         }
 
+        public void NameCheck()
+        {
+            Description = ToString();
+        }
+
         public bool Check()
         {
             bool state = stateCheck != null && stateCheck(Code);
             return state;
+        }
+
+        public override string ToString()
+        {
+            string output = string.Format("{0} {1}", State, Code);
+            return output;
         }
     }
 }

@@ -34,13 +34,5 @@ namespace NeonRattie.Rat.RatStates
         {
             StateMachine.ChangeState(RatActionStates.Idle);
         }
-
-        public override void Exit(IState state)
-        {
-            base.Exit(state);
-            rat.RatAnimator.ExitWalk();
-            (PlayerControls.Instance as PlayerControls).Unwalk -= OnUnWalk;
-
-        }
     }
 }

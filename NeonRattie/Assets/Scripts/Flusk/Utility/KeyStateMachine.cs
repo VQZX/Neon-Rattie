@@ -21,7 +21,6 @@ namespace Flusk.Utility
         public virtual void ChangeState(TKey key)
         {
             TState state = keyStates[key];
-            Debug.Log("Change state --> "+key);
             base.ChangeState(state);
         }
     }
