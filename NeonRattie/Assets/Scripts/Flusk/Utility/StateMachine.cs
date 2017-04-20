@@ -7,6 +7,10 @@ namespace Flusk.Utility
         protected List<TState> states;
         public IState CurrentState {get; protected set;}
 
+        public StateMachine()
+        {
+            states = new List<TState>();
+        }
         public virtual void AddState (TState state)
         {
             states.Add(state);

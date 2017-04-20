@@ -38,7 +38,11 @@ namespace NeonRattie.Rat
         private RatStateMachine ratStateMachine = new RatStateMachine();
 
         //states and keys
-        protected RatActionStates idle, jump, climb, walk;
+        protected RatActionStates
+            idle = RatActionStates.Idle,
+            jump = RatActionStates.Jump,
+            climb = RatActionStates.Climb,
+            walk = RatActionStates.Walk;
 
         protected Idle idling;
         protected Jump jumping;
@@ -70,10 +74,17 @@ namespace NeonRattie.Rat
         {
             (SceneManagement.Instance as SceneManagement).Rat = this;
             NavAgent = GetComponentInChildren<NavMeshAgent>();
+            Init();
         }
         
         private void Init()
         {
+
+            idling = new Idle();
+            walking = new Walk();
+            jumping = new Jump();
+            climbing = new Climb();
+
             ratStateMachine.AddState(idle, idling);
             ratStateMachine.AddState(walk, walking);
             ratStateMachine.AddState(jump, jumping);
