@@ -9,9 +9,10 @@ namespace NeonRattie.Rat.RatStates
 
         protected RatBrain rat;
 
-        public void Init(RatBrain rat)
+        public void Init(RatBrain rat, RatStateMachine machine)
         {
             this.rat = rat;
+            StateMachine = machine;
         }
 
         public virtual void Enter(IState previousState)

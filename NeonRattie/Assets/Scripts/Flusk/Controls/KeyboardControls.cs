@@ -29,13 +29,15 @@ namespace Flusk.Controls
             var count = codes.Length;
             for (var i = 0; i < count; ++i)
             {
-                if (!codes[i].Check())
+                var current = codes[i];
+;                if (!current.Check())
                 {
                     continue;
                 }
                 KeyData data = new KeyData();
-                data.Code = codes[i].Code;
+                data.Code = current.Code;
                 data.AxisValue = 0;
+                data.State = current.State;
                 if (KeyHit != null)
                 {
                     KeyHit(data);

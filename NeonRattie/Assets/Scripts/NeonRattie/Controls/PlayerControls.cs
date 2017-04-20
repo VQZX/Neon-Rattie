@@ -32,6 +32,7 @@ namespace NeonRattie.Controls
         public event Action<float> Walk;
         public event Action<float> Run;
         public event Action<float> Jump;
+        public event Action<float> Unwalk;
 
         public event Action Pause;
         public event Action Exit;
@@ -48,7 +49,9 @@ namespace NeonRattie.Controls
 
         public bool CheckKeyUp(KeyCode code)
         {
-            return Input.GetKeyUp(code);
+            bool up = Input.GetKeyUp(code);
+            Debug.LogFormat("Code: {0} Upstate: {1}", code, up);
+            return up;
         }
 
         protected virtual void Start ()
@@ -61,7 +64,14 @@ namespace NeonRattie.Controls
             kc.KeyHit += InvokeWalk;
             kc.KeyHit += InvokeRun;
             kc.KeyHit += InvokeJump;
+            kc.KeyHit += InvokeUnWalk;
         }
+
+        public virtual void Update()
+        {
+            Debug.Log("W Up -- "+Input.GetKeyUp(KeyCode.W));
+        }
+
         protected virtual void OnDisable()
         {
             var kc = (KeyboardControls.Instance as KeyboardControls);
@@ -72,13 +82,13 @@ namespace NeonRattie.Controls
             kc.KeyHit -= InvokeWalk;
             kc.KeyHit -= InvokeRun;
             kc.KeyHit -= InvokeJump;
+            kc.KeyHit -= InvokeUnWalk;
         }
 
         private void Invoke(Action<float> action, float value)
         {
             if (action != null)
             {
-                Debug.LogFormat("Action: {0} -- value: {1}", action, value);
                 action(value);
             }
         }
@@ -93,11 +103,20 @@ namespace NeonRattie.Controls
 
         private void InvokeWalk(KeyData data)
         {
-            if (walkKey != data.Code)
+            if (walkKey != data.Code || data.State == KeyState.Up)
             {
                 return;
             }
             Invoke(Walk, data.AxisValue);
+        }
+
+        private void InvokeUnWalk(KeyData data)
+        {
+            if (walkKey != data.Code || data.State != KeyState.Up)
+            {
+                return;
+            }
+            Invoke(Unwalk, data.AxisValue);
         }
 
         private void InvokeRun(KeyData data)

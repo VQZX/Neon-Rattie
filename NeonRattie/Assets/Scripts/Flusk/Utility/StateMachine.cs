@@ -27,11 +27,13 @@ namespace Flusk.Utility
 
         public void ChangeState(IState state)
         {
+            var previousState = CurrentState;
             if ( CurrentState != null )
             {
                 CurrentState.Exit(state);
             }
             CurrentState = state;
+            CurrentState.Enter(previousState);
         }
     }
 

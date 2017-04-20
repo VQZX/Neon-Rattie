@@ -64,7 +64,7 @@ namespace NeonRattie.Rat
         {
             if (NavAgent == null)
             {
-                transform.Translate(Vector3.forward * walkSpeed, Space.Self);
+                transform.Translate(Vector3.forward * walkSpeed * Time.deltaTime, Space.Self);
                 return;
             }
             NavAgent.SetDestination(transform.position + transform.forward * walkSpeed);
@@ -79,11 +79,19 @@ namespace NeonRattie.Rat
         
         private void Init()
         {
+            RatAnimator = GetComponent<RatAnimator>();
+
+            ratStateMachine.Init(this);
 
             idling = new Idle();
             walking = new Walk();
             jumping = new Jump();
             climbing = new Climb();
+
+            idling.Init(this, ratStateMachine);
+            walking.Init(this, ratStateMachine);
+            jumping.Init(this, ratStateMachine);
+            climbing.Init(this, ratStateMachine);
 
             ratStateMachine.AddState(idle, idling);
             ratStateMachine.AddState(walk, walking);
@@ -101,6 +109,11 @@ namespace NeonRattie.Rat
         public override void Initialise()
         {
             throw new System.NotImplementedException();
+        }
+
+        protected virtual void Update()
+        {
+           ratStateMachine.Tick();
         }
 
         protected virtual void OnEnable()

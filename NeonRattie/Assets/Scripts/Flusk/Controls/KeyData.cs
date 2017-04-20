@@ -8,5 +8,6 @@ namespace Flusk.Controls
     {
         public KeyCode Code;
         public float AxisValue;
+        public KeyState State;
     }
 }

@@ -26,6 +26,11 @@ namespace NeonRattie.Rat.RatStates
                         return;
                     }
                     StateMachine.ChangeState(RatActionStates.Jump);
+                    return;
+                }
+                if (pc.CheckKey(pc.Forward))
+                {
+                    
                 }
             }
         }
