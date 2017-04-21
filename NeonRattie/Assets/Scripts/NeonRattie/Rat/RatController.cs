@@ -38,7 +38,7 @@ namespace NeonRattie.Rat
 
         private Vector3 ForwardDirection
         {
-            get { return (transform.forward + offsetRotation).normalized; }
+            get { return (-Vector3.right).normalized; }
         }
 
         private RatStateMachine ratStateMachine = new RatStateMachine();

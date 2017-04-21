@@ -1,6 +1,6 @@
 ﻿namespace Flusk.Patterns
 {
-    public class PersistentSingleton<T> : Singleton<PersistentSingleton<T>>
+    public class PersistentSingleton<T> : Singleton<T> where T : Singleton<T>
     {
         protected sealed override void Awake()
         {

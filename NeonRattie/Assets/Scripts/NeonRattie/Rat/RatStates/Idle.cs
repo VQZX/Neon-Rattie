@@ -1,10 +1,17 @@
-﻿using Flusk.Utility;
+﻿using Assets.Scripts.Flusk.Utility;
+using Flusk.Management;
+using Flusk.Utility;
 using NeonRattie.Controls;
 
 namespace NeonRattie.Rat.RatStates
 {
     public class Idle : RatState
     {
+
+        public bool hasMovedMouse = false;
+        private float resetTime = 10;
+        private Timer searchTime;
+
         public override void Enter(IState previousState)
         {
             base.Enter(previousState);
@@ -34,6 +41,20 @@ namespace NeonRattie.Rat.RatStates
                     
                 }
             }
+            if (MouseManager.Instance != null )
+            {
+                if ( MouseManager.Instance.Delta.magnitude > 0 )
+                {
+                    rat.RatAnimator.PlaySearchingIdle();
+                    searchTime = new Timer(resetTime, UndoSearch);
+                }
+            }
+        }
+
+        private void UndoSearch ()
+        {
+            searchTime = null;
+            rat.RatAnimator.PlayIdle();
         }
 
         public override void Exit(IState previousState)

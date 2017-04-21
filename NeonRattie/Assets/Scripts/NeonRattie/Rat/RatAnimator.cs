@@ -23,6 +23,11 @@ namespace NeonRattie.Rat
             Debug.Log("Play Idle");  
         }
 
+        public void PlaySearchingIdle ()
+        {
+            Debug.Log("Play Searching Idle");
+        }
+
         public void PlayWalk()
         {
             //probably set bool on animator here

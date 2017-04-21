@@ -1,0 +1,38 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+
+namespace Assets.Scripts.Flusk.Utility
+{
+    public class Timer
+    {
+        public Action Complete;
+
+        private float time = 0;
+        private float goal;
+
+        public Timer (float time, Action onComplete = null )
+        {
+            this.time = time;
+            Complete = onComplete;
+        }
+
+        public void Tick (float deltaTime)
+        {
+            time += deltaTime;
+            if ( time > goal )
+            {
+                Fire();
+            }
+        }
+
+        private void Fire ()
+        {
+            if ( Complete != null )
+            {
+                Complete();
+            }
+        }
+    }
+}
