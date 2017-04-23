@@ -16,8 +16,8 @@ namespace NeonRattie.Rat.RatStates
         {
             base.Enter(previousState);
             rat.RatAnimator.PlayIdle();
-            (PlayerControls.Instance as PlayerControls).Walk += OnWalkPressed;
-            (PlayerControls.Instance as PlayerControls).Reverse += OnReversePressed;
+            PlayerControls.Instance.Walk += OnWalkPressed;
+            PlayerControls.Instance.Reverse += OnReversePressed;
         }
 
         public override void Tick()
@@ -36,19 +36,17 @@ namespace NeonRattie.Rat.RatStates
                     StateMachine.ChangeState(RatActionStates.Jump);
                     return;
                 }
-                if (pc.CheckKey(pc.Forward))
-                {
-                    
-                }
             }
-            if (MouseManager.Instance != null )
+            if (MouseManager.Instance == null)
             {
-                if ( MouseManager.Instance.Delta.magnitude > 0 )
-                {
-                    rat.RatAnimator.PlaySearchingIdle();
-                    searchTime = new Timer(resetTime, UndoSearch);
-                }
+                return;
             }
+            if (!(MouseManager.Instance.Delta.magnitude > 0))
+            {
+                return;
+            }
+            rat.RatAnimator.PlaySearchingIdle();
+            searchTime = new Timer(resetTime, UndoSearch);
         }
 
         private void UndoSearch ()
@@ -59,8 +57,8 @@ namespace NeonRattie.Rat.RatStates
 
         public override void Exit(IState previousState)
         {
-            (PlayerControls.Instance as PlayerControls).Walk -= OnWalkPressed;
-            (PlayerControls.Instance as PlayerControls).Reverse -= OnReversePressed;
+            PlayerControls.Instance.Walk -= OnWalkPressed;
+            PlayerControls.Instance.Reverse -= OnReversePressed;
 
         }
 

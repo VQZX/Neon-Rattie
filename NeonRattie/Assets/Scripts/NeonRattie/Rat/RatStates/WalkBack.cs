@@ -1,5 +1,6 @@
 ﻿using Flusk.Utility;
 using NeonRattie.Controls;
+using UnityEngine;
 
 namespace NeonRattie.Rat.RatStates
 {
@@ -8,11 +9,11 @@ namespace NeonRattie.Rat.RatStates
         public override void Enter(IState previousState)
         {
             base.Enter(previousState);
-            rat.RatAnimator.PlayWalk();
-            (PlayerControls.Instance as PlayerControls).UnReverse += UnReverse;
+            rat.RatAnimator.PlayReverse();
+            PlayerControls.Instance.UnReverse += UnReverse;
         }
 
-        public void Tick()
+        public override void Tick()
         {
             base.Tick();
             rat.WalkBackward();

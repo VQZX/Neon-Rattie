@@ -75,11 +75,13 @@ namespace NeonRattie.Rat
 
         public void WalkForward()
         {
+            Debug.Log("Wal forward");
             Walk(ForwardDirection);
         }
 
         public void WalkBackward()
         {
+            Debug.Log("Wal backward");
             Walk(-ForwardDirection);
         }
 

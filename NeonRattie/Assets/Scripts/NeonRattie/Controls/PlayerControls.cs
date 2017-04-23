@@ -11,7 +11,7 @@ namespace NeonRattie.Controls
     public class PlayerControls : PersistentSingleton<PlayerControls>
     {
         [SerializeField] protected KeyCode walkKey;
-        [SerializeField] protected KeyCode reverseKey = KeyCode.D;
+        [SerializeField] protected KeyCode reverseKey = KeyCode.S;
         [SerializeField] protected KeyCode runKey;
         [SerializeField] protected KeyCode jumpKey;
 
@@ -128,7 +128,8 @@ namespace NeonRattie.Controls
 
         private void InvokeReverse(KeyData data)
         {
-            if (reverseKey != data.Code || data.State != KeyState.Up)
+            Debug.LogFormat("{0} -- {1}", data.Code, data.State);
+            if (reverseKey != data.Code || data.State != KeyState.Down)
             {
                 return;
             }
@@ -137,7 +138,7 @@ namespace NeonRattie.Controls
 
         private void InvokeUnReverse(KeyData data)
         {
-            if (reverseKey != data.Code || data.State == KeyState.Up)
+            if (reverseKey != data.Code || data.State != KeyState.Up)
             {
                 return;
             }
