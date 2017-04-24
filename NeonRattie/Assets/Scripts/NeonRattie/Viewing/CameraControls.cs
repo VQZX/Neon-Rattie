@@ -12,7 +12,8 @@ namespace NeonRattie.Viewing
     [RequireComponent(typeof(Camera))]
     public class CameraControls : MonoBehaviour
     {
-        private RatController rat;
+        [SerializeField]
+        protected RatController rat;
 
         [SerializeField] protected Range distanceFromRat;
 
@@ -28,7 +29,9 @@ namespace NeonRattie.Viewing
         private Vector2 rotationDelta;
 
         private Quaternion originalRotation;
+        private Vector3 originalPosition;
         private Vector3 ratDirection;
+        private float flatDistance = 0;
 
         public void LoadRat()
         {
@@ -46,6 +49,16 @@ namespace NeonRattie.Viewing
             originalRotation = transform.localRotation;
             LoadRat();
             ratDirection = (transform.position - rat.transform.position).normalized;
+            originalPosition = transform.position;
+            CalculateFlat();
+        }
+
+
+        protected virtual void CalculateFlat()
+        {
+            var y = rat.transform.position.y - originalPosition.y;
+            var hyp = distanceFromRat.Median;
+            flatDistance = Mathf.Sqrt((y * y) + (hyp * hyp));
         }
 
         protected virtual void LateUpdate()
@@ -57,13 +70,16 @@ namespace NeonRattie.Viewing
 
             Translation();
             Rotation();
-            
+            Vector3 point = transform.position;
+            point.y = originalPosition.y;
+            transform.position = point;
+
             return;
         }
 
         private void Translation()
         {
-            transform.position = rat.transform.position + ratDirection * distanceFromRat.Median;
+            transform.position = rat.transform.position - rat.ForwardDirection * distanceFromRat.Median;
         }
 
         private void Rotation()
@@ -87,16 +103,19 @@ namespace NeonRattie.Viewing
                 return;
             }
             //bias towards rat
-            FollowMouse(nonIdleLimiter);
+            transform.LookAt(rat.transform);
         }
 
         private void FollowMouse(float speed = 1)
         {
+            //transform.LookAt(rat.transform);
             var euler = new Vector3(-rotationDelta.y, rotationDelta.x);
+
             var current = transform.localRotation;
             var delta = new Quaternion { eulerAngles = euler };
             var next = current * delta;
             transform.localRotation = Quaternion.Slerp(current, next, Time.deltaTime * rotateSpeed * speed);
-        }
+
+        }      
     }
 }

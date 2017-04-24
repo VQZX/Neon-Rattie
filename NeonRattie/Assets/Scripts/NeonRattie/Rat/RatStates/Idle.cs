@@ -23,6 +23,7 @@ namespace NeonRattie.Rat.RatStates
         public override void Tick()
         {
             base.Tick();
+            rat.TankControls();
             var pc = (PlayerControls.Instance as PlayerControls);
             if (pc != null)
             {

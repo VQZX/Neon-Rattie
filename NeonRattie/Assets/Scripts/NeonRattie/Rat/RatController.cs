@@ -36,9 +36,9 @@ namespace NeonRattie.Rat
 
         private Vector3 offsetRotation;
 
-        private Vector3 ForwardDirection
+        public Vector3 ForwardDirection
         {
-            get { return (-Vector3.right).normalized; }
+            get { return (-transform.right).normalized; }
         }
 
         private RatStateMachine ratStateMachine = new RatStateMachine();
@@ -61,6 +61,19 @@ namespace NeonRattie.Rat
         protected Climb climbing;
         protected Walk walking;
         protected WalkBack reversing;
+
+        public void TankControls()
+        {
+            var amount = 100;
+            if (PlayerControls.Instance.CheckKey(KeyCode.A))
+            {
+                RotateRat(-amount * Time.deltaTime * Mathf.Deg2Rad);
+            }
+            if (PlayerControls.Instance.CheckKey(KeyCode.D))
+            {
+                RotateRat(amount * Time.deltaTime * Mathf.Deg2Rad);
+            }
+        }
 
 
         public bool ClimbValid()
@@ -127,6 +140,15 @@ namespace NeonRattie.Rat
             ratStateMachine.AddState(climb, climbing);
             ratStateMachine.AddState(reverse, reversing);
             ratStateMachine.ChangeState(idle);
+        }
+
+        /// <summary>
+        /// rotate around y-axis
+        /// </summary>
+        /// <param name="angle"></param>
+        public virtual void RotateRat(float angle)
+        {
+            transform.RotateAround(transform.position, Vector3.up, angle);
         }
 
         public override void Destroy()
