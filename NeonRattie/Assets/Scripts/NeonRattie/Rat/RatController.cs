@@ -24,6 +24,8 @@ namespace NeonRattie.Rat
         [SerializeField] protected float mass = 1;
         public float Mass { get { return mass; } }
 
+        [SerializeField] protected float rotateAmount = 300;
+
         public Vector3 Velocity { get; protected set; }
 
         private Vector3 previousPosition;
@@ -64,14 +66,13 @@ namespace NeonRattie.Rat
 
         public void TankControls()
         {
-            var amount = 100;
             if (PlayerControls.Instance.CheckKey(KeyCode.A))
             {
-                RotateRat(-amount * Time.deltaTime * Mathf.Deg2Rad);
+                RotateRat(-rotateAmount * Time.deltaTime * Mathf.Deg2Rad);
             }
             if (PlayerControls.Instance.CheckKey(KeyCode.D))
             {
-                RotateRat(amount * Time.deltaTime * Mathf.Deg2Rad);
+                RotateRat(rotateAmount * Time.deltaTime * Mathf.Deg2Rad);
             }
         }
 
