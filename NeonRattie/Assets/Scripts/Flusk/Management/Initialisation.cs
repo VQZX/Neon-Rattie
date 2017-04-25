@@ -1,7 +1,4 @@
-﻿#if UNITY_EDITOR
-using System.IO;
-using UnityEditor;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Flusk.Management
 {
@@ -10,7 +7,7 @@ namespace Flusk.Management
         private const string PATH = "MainPrefab";
 
         [RuntimeInitializeOnLoadMethod]
-        static void StartUp ()
+        public static void StartUp ()
         {
             GameObject mainPrefab = Resources.Load(PATH) as GameObject;
             var mp = mainPrefab.GetComponent<MainPrefab>();
@@ -19,4 +16,3 @@ namespace Flusk.Management
         }
     }
 }
-#endif
