@@ -1,11 +1,8 @@
-﻿using System;
-using Flusk.Management;
-using Flusk.Structures;
+﻿using Flusk.Structures;
 using NeonRattie.Controls;
 using NeonRattie.Rat;
 using NeonRattie.Rat.RatStates;
 using UnityEngine;
-using Random = UnityEngine.Random;
 
 namespace NeonRattie.Viewing
 {
@@ -15,107 +12,80 @@ namespace NeonRattie.Viewing
         [SerializeField]
         protected RatController rat;
 
-        [SerializeField] protected Range distanceFromRat;
+        [SerializeField]
+        protected FollowData followData;
 
+        [SerializeField]
+        protected FreeControlData freeControl;
 
-        //maybe use angle limitation instead 
-        [SerializeField] protected Range verticalRotation;
-        [SerializeField] protected Range horizontalRotation;
+        [SerializeField]
+        protected TriggerCallback delayCollider;
 
-        [SerializeField] protected float nonIdleLimiter = 0.5f;
+        [SerializeField]
+        protected LayerMask groundLayer;
 
-        [SerializeField] protected float rotateSpeed = 10;
+        private Vector3 initDirectionToRat;
 
-        private Vector2 rotationDelta;
-
-        private Quaternion originalRotation;
-        private Vector3 originalPosition;
-        private Vector3 ratDirection;
-        private float flatDistance = 0;
-
-        public void LoadRat()
-        {
-            rat = (SceneManagement.Instance as SceneManagement).Rat;
-        }
-
-        //used if we want make the camera look elsewhere
-        public void UnLoadRat()
-        {
-            rat = null;
-        }
+        private Vector3 speedTest;
 
         protected virtual void Start()
         {
-            originalRotation = transform.localRotation;
-            LoadRat();
-            ratDirection = (transform.position - rat.transform.position).normalized;
-            originalPosition = transform.position;
-            CalculateFlat();
-        }
-
-
-        protected virtual void CalculateFlat()
-        {
-            var y = rat.transform.position.y - originalPosition.y;
-            var hyp = distanceFromRat.Median;
-            flatDistance = Mathf.Sqrt((y * y) + (hyp * hyp));
+            if (rat == null)
+            {
+                rat = SceneManagement.Instance.Rat;
+            }
+            initDirectionToRat = (rat.transform.position - transform.position).normalized;
         }
 
         protected virtual void LateUpdate()
         {
-            if (rat == null)
+            var currentState = rat.StateMachine.CurrentState;
+            if (currentState is Idle)
             {
-                return;
+                FreeControl();
             }
-
-            Translation();
-            Rotation();
-            Vector3 point = transform.position;
-            point.y = originalPosition.y;
-            transform.position = point;
-
-            return;
+            else if ( currentState is IActionState)
+            {
+                Follow();
+            }
+            else
+            {
+                Debug.LogWarning("[CAMERA CONTROLS] RAT IS NOT A STATE FOR THE CAMERA TO DO ANYTHING");
+            }
         }
 
-        private void Translation()
+        protected void Follow()
         {
-            transform.position = rat.transform.position - rat.ForwardDirection * distanceFromRat.Median;
-        }
-
-        private void Rotation()
-        {
-            if (MouseManager.Instance == null)
+            if (delayCollider.IsInside(rat.RatPosition.transform) )
             {
+                Debug.Log("Is inside");
                 return;
             }
-            rotationDelta = MouseManager.Instance.Delta;
-            if (rat.StateMachine.CurrentState is Idle)
+            else
             {
-                //allow free look around
-                FollowMouse();
-                return;
+                Debug.Log("Not inside");
             }
-            if (Math.Abs(MouseManager.Instance.Delta.sqrMagnitude) < 0.01f)
-            {
-                //close to no movement, return to rat
-                transform.localRotation = Quaternion.Slerp(transform.localRotation, originalRotation,
-                    Time.deltaTime * rotateSpeed);
-                return;
-            }
-            //bias towards rat
+            //TODO: add acceleration to prevent snapping
             transform.LookAt(rat.transform);
+            Vector3 current = transform.position;
+            Vector3 next = rat.RatPosition.transform.position;
+            //translation
+            next -= initDirectionToRat * followData.DistanceFromPlayer;
+            transform.position = Vector3.Lerp(current, next, Time.deltaTime * followData.PitchRotation);
+            CorrectHeightFromGround();
         }
 
-        private void FollowMouse(float speed = 1)
+        protected void FreeControl()
         {
-            //transform.LookAt(rat.transform);
-            var euler = new Vector3(-rotationDelta.y, rotationDelta.x);
+            
+        }
 
-            var current = transform.localRotation;
-            var delta = new Quaternion { eulerAngles = euler };
-            var next = current * delta;
-            transform.localRotation = Quaternion.Slerp(current, next, Time.deltaTime * rotateSpeed * speed);
-
-        }      
+        private void CorrectHeightFromGround()
+        {
+            Vector3 pos = transform.position;
+            Vector3 ratPos = rat.RatPosition.transform.position;
+            pos.y = ratPos.y + followData.HeightAboveAgent;
+            transform.position = Vector3.Lerp(transform.position, pos, Time.deltaTime * followData.PitchRotation);
+        }
     }
 }

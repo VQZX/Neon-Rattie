@@ -1,7 +1,7 @@
 ﻿namespace NeonRattie.Rat.RatStates
 {
-    public class Climb : RatState, IActionState
+    public interface IActionState
     {
-
+        
     }
 }

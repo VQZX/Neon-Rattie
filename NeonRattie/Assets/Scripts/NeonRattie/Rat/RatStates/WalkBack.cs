@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace NeonRattie.Rat.RatStates
 {
-    public class WalkBack : RatState
+    public class WalkBack : RatState, IActionState
     {
         public override void Enter(IState previousState)
         {
@@ -23,7 +23,7 @@ namespace NeonRattie.Rat.RatStates
         {
             base.Exit(state);
             rat.RatAnimator.ExitWalk();
-            (PlayerControls.Instance as PlayerControls).UnReverse -= UnReverse;
+            PlayerControls.Instance.UnReverse -= UnReverse;
         }
 
         private void UnReverse(float x)

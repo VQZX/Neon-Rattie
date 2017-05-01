@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace NeonRattie.Rat.RatStates
 {
-    public class Walk : RatState
+    public class Walk : RatState, IActionState
     {
         public override void Enter(IState previousState)
         {
@@ -37,7 +37,6 @@ namespace NeonRattie.Rat.RatStates
                 return;;
             }
             var rotationDelta = MouseManager.Instance.Delta;
-            Debug.Log(rotationDelta);
             if (rotationDelta.magnitude == 0)
             {
                 return;

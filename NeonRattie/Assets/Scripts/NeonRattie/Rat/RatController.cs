@@ -26,6 +26,13 @@ namespace NeonRattie.Rat
 
         [SerializeField] protected float rotateAmount = 300;
 
+        [SerializeField] protected Transform ratPosition;
+
+        public Transform RatPosition
+        {
+            get { return ratPosition; }
+        }
+
         public Vector3 Velocity { get; protected set; }
 
         private Vector3 previousPosition;
@@ -33,6 +40,7 @@ namespace NeonRattie.Rat
 
         public RatAnimator RatAnimator { get; protected set; }
         public NavMeshAgent NavAgent { get; protected set; }
+       
 
         //other rat effects...
 
@@ -89,19 +97,18 @@ namespace NeonRattie.Rat
 
         public void WalkForward()
         {
-            Debug.Log("Wal forward");
+
             Walk(ForwardDirection);
         }
 
         public void WalkBackward()
         {
-            Debug.Log("Wal backward");
             Walk(-ForwardDirection);
         }
 
         protected virtual void OnManagementLoaded()
         {
-            (SceneManagement.Instance as SceneManagement).Rat = this;
+            SceneManagement.Instance.Rat = this;
             NavAgent = GetComponentInChildren<NavMeshAgent>();
             Init();
             offsetRotation = new Vector3(-1, 0, 1);

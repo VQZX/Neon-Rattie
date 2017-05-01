@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace NeonRattie.Rat.RatStates
 {
-    public class Jump : RatState
+    public class Jump : RatState, IActionState
     {
         private float stateTime = 0;
         private Vector3 groundPosition;

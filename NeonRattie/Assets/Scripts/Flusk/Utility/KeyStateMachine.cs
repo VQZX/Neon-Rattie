@@ -5,7 +5,12 @@ namespace Flusk.Utility
 {
     public class KeyStateMachine<TKey, TState> : StateMachine<TState> where TState : IState
     {
-        public Dictionary<TKey, TState> keyStates;
+        public TState this[TKey k]
+        {
+            get { return keyStates[k]; }
+        }
+
+        protected Dictionary<TKey, TState> keyStates;
 
         public KeyStateMachine() : base()
         {

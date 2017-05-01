@@ -128,7 +128,6 @@ namespace NeonRattie.Controls
 
         private void InvokeReverse(KeyData data)
         {
-            Debug.LogFormat("{0} -- {1}", data.Code, data.State);
             if (reverseKey != data.Code || data.State != KeyState.Down)
             {
                 return;
