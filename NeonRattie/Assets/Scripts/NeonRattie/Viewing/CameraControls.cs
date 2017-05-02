@@ -28,6 +28,9 @@ namespace NeonRattie.Viewing
 
         private Vector3 speedTest;
 
+        private Vector3 ratInitFacingDirection;
+        private Vector3 initDifference;
+
         protected virtual void Start()
         {
             if (rat == null)
@@ -35,6 +38,7 @@ namespace NeonRattie.Viewing
                 rat = SceneManagement.Instance.Rat;
             }
             initDirectionToRat = (rat.transform.position - transform.position).normalized;
+            ratInitFacingDirection = rat.transform.forward;
         }
 
         protected virtual void LateUpdate()
@@ -71,8 +75,9 @@ namespace NeonRattie.Viewing
             Vector3 next = rat.RatPosition.transform.position;
             //translation
             next -= initDirectionToRat * followData.DistanceFromPlayer;
-            transform.position = Vector3.Lerp(current, next, Time.deltaTime * followData.PitchRotation);
+            
             CorrectHeightFromGround();
+            transform.position = next;
         }
 
         protected void FreeControl()
