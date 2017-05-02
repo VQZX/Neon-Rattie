@@ -46,10 +46,21 @@ namespace NeonRattie.Rat
 
         private Vector3 offsetRotation;
 
+        //TODO: right editor script so these can be configurable!
         public Vector3 ForwardDirection
+        {
+            get { return (-Vector3.right).normalized; }
+        }
+
+        public Vector3 LocalForward
         {
             get { return (-transform.right).normalized; }
         }
+
+
+#if UNITY_EDITOR
+        [ReadOnly, SerializeField] protected Vector3 forwardDirection;
+#endif
 
         private RatStateMachine ratStateMachine = new RatStateMachine();
 
@@ -172,6 +183,9 @@ namespace NeonRattie.Rat
         protected virtual void Update()
         {
            ratStateMachine.Tick();
+#if UNITY_EDITOR
+            forwardDirection = ForwardDirection;
+#endif
         }
 
         protected virtual void OnEnable()

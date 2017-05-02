@@ -31,20 +31,10 @@ namespace NeonRattie.Rat.RatStates
             }
             //otherwise
             rat.WalkForward();
-
-            if (MouseManager.Instance == null)
-            {
-                return;;
-            }
-            var rotationDelta = MouseManager.Instance.Delta;
-            if (rotationDelta.magnitude == 0)
-            {
-                return;
-            }
-            var euler = new Vector3(-rotationDelta.y, rotationDelta.x);
-            var angle = Mathf.Atan2(euler.y, euler.x);
-            rat.RotateRat(angle);
+            RatRotate();
         }
+
+
 
         private void OnUnWalk(float x)
         {

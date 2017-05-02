@@ -1,4 +1,6 @@
 ﻿using System;
+using Flusk.Structures;
+using UnityEngine;
 
 namespace NeonRattie.Viewing
 {
@@ -6,8 +8,8 @@ namespace NeonRattie.Viewing
     public struct FreeControlData
     {
         public float MoveRadius;
-        public float UpMoveDistance;
-        public float DownMoveDistance;
+        public float UpMovement;
+        public float DownMovement; 
         public float RotationSpeed;
     }
 }
