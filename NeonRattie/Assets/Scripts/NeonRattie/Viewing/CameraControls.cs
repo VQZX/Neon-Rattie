@@ -1,5 +1,4 @@
 ﻿using Flusk.Management;
-using Flusk.Structures;
 using NeonRattie.Controls;
 using NeonRattie.Rat;
 using NeonRattie.Rat.RatStates;
@@ -25,6 +24,8 @@ namespace NeonRattie.Viewing
 
         [SerializeField]
         protected LayerMask groundLayer;
+
+        [SerializeField] protected float slerpTimeModifier = 0.1f;
 
         private Vector3 initDirectionToRat;
 
@@ -152,7 +153,7 @@ namespace NeonRattie.Viewing
 
         private void LookAt()
         {
-            slerpTime += Time.deltaTime;
+            slerpTime += Time.deltaTime * slerpTimeModifier;
             Vector3 direction = (rat.RatPosition.position - transform.position).normalized;
             Quaternion current = transform.rotation;
             Quaternion next = Quaternion.LookRotation(direction);
