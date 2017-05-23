@@ -133,12 +133,14 @@ namespace NeonRattie.Rat
         {
             var direction = LocalForward;
             RaycastHit info;
-            bool success = Physics.Raycast(transform.position, direction, out info, 0.2f, jumpLayer);
+            bool success = Physics.Raycast(transform.position, direction, out info);
+            Debug.LogFormat("ClimbValid() -- {0}", success);
             if (success)
             {
                 JumpBox = info.transform.GetComponentInChildren<JumpBox>();
                 return JumpBox != null;
             }
+            JumpBox = null;
             return false; 
             
         }
@@ -236,7 +238,12 @@ namespace NeonRattie.Rat
 
         protected virtual void Update()
         {
-           ratStateMachine.Tick();
+            ratStateMachine.Tick();
+            ClimbValid();
+            if  (JumpBox != null )
+            {
+                JumpBox.Select(true);
+            }
 #if UNITY_EDITOR
             forwardDirection = ForwardDirection;
             RatState = ratStateMachine.CurrentState.ToString();
@@ -256,6 +263,11 @@ namespace NeonRattie.Rat
         protected virtual void LateUpdate()
         {
             UpdateVelocity(Time.deltaTime);
+        }
+        
+        protected virtual void OnDrawGizmos()
+        {
+            Gizmos.DrawLine(transform.position, transform.position + LocalForward * 10);
         }
 
         private void UpdateVelocity(float deltaTime)

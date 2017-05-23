@@ -19,6 +19,14 @@ namespace NeonRattie.Objects
             get { return jumpPoint; }
         }
 
+        private Material material;
+
+
+        public void Select (bool state = true)
+        {
+            material.color = state ? Color.red : Color.white;
+        } 
+
         public Curve CalculateCurve (Collider collider)
         {
             Curve curve = new Curve();
@@ -61,7 +69,7 @@ namespace NeonRattie.Objects
 
         protected virtual void Awake ()
         {
-            gameObject.isStatic = true;
+            material = GetComponent<MeshRenderer>().material;
         }
     }
 }
