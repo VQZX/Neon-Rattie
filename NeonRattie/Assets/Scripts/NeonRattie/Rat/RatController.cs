@@ -1,4 +1,5 @@
-﻿using Flusk.Management;
+﻿using System;
+using Flusk.Management;
 using NeonRattie.Controls;
 using NeonRattie.Objects;
 using NeonRattie.Rat.RatStates;
@@ -9,7 +10,7 @@ using UnityEngine.AI;
 namespace NeonRattie.Rat
 {
     [RequireComponent( typeof(RatAnimator))]
-    public class RatController : NeonRattieBehaviour
+    public class RatController : NeonRattieBehaviour, IMovable
     {
         [SerializeField] protected float walkSpeed = 10;
         [SerializeField] protected float runSpeed = 15;
@@ -109,6 +110,11 @@ namespace NeonRattie.Rat
             {
                 RotateRat(rotateAmount * Time.deltaTime * Mathf.Deg2Rad);
             }
+        }
+
+        public void Move(Vector3 position)
+        {
+            throw new NotImplementedException();
         }
 
         public bool TryMove (Vector3 position)
@@ -259,5 +265,7 @@ namespace NeonRattie.Rat
             Velocity = difference / deltaTime;
             previousPosition = currentPosition;
         }
+
+       
     }
 }
