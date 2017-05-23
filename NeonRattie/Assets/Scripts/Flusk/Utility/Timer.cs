@@ -10,7 +10,7 @@ namespace Assets.Scripts.Flusk.Utility
         public Action Complete;
 
         private float time = 0;
-        private float goal;
+        private float goal = 0;
 
         public Timer (float time, Action onComplete = null )
         {

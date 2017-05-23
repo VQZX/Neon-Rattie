@@ -10,6 +10,7 @@ namespace NeonRattie.Rat.RatStates
         public RatStateMachine StateMachine { get; set; }
 
         protected RatBrain rat;
+        protected Vector3 groundPosition;
 
         public void Init(RatBrain rat, RatStateMachine machine)
         {
@@ -53,6 +54,31 @@ namespace NeonRattie.Rat.RatStates
             float angle;
             MouseManager.Instance.GetMotionData(out euler, out angle);
             rat.RotateRat(angle);
+        }
+
+        protected void OnJump(float x)
+        {
+            Debug.Log("[WALK] Jump()");
+            if (rat.ClimbValid())
+            {
+                //StateMachine.ChangeState(RatActionStates.Climb);
+                //return;
+            }
+            StateMachine.ChangeState(RatActionStates.Jump);
+        }
+
+        protected void GetGroundData ()
+        {
+            var ground = rat.GetGroundData();
+            if (ground == null)
+            {
+                //TODO: immediately change to another state
+                groundPosition = rat.transform.position;
+            }
+            else
+            {
+                groundPosition = ground.position;
+            }
         }
     }
 }

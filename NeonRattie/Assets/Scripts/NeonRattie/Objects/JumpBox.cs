@@ -3,9 +3,12 @@ using UnityEngine;
 
 namespace NeonRattie.Objects
 {
+    [RequireComponent (typeof(BoxCollider))]
+    [RequireComponent(typeof(Rigidbody))]
     public class JumpBox : NeonRattieBehaviour
     {
-        [SerializeField] protected LayerMask jumpLayer;
+        [SerializeField]
+        protected LayerMask jumpLayer;
 
         public override void Destroy()
         {
@@ -15,6 +18,11 @@ namespace NeonRattie.Objects
         public override void Initialise()
         {
             throw new System.NotImplementedException();
+        }
+
+        protected virtual void Awake ()
+        {
+            gameObject.isStatic = true;
         }
     }
 }

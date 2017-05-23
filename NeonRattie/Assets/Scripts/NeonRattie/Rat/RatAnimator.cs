@@ -45,6 +45,11 @@ namespace NeonRattie.Rat
             Debug.Log("Play Jump");
         }
 
+        public void PlayClimb ()
+        {
+            Debug.Log("Play Climb");
+        } 
+
         public void PlayReverse()
         {
             Debug.Log("Reverse");

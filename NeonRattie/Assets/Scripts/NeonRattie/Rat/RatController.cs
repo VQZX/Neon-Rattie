@@ -1,5 +1,6 @@
 ﻿using Flusk.Management;
 using NeonRattie.Controls;
+using NeonRattie.Objects;
 using NeonRattie.Rat.RatStates;
 using NeonRattie.Shared;
 using UnityEngine;
@@ -19,7 +20,8 @@ namespace NeonRattie.Rat
         [SerializeField] protected float jumpForce = 10;
         public float JumpForce { get { return jumpForce; } }
         [SerializeField] protected AnimationCurve jumpArc;
-        public AnimationCurve JumpAnimationCurve;
+        public AnimationCurve JumpArc { get { return jumpArc; } }
+        [SerializeField] protected AnimationCurve JumpAnimationCurve;
 
         [SerializeField] protected float mass = 1;
         public float Mass { get { return mass; } }
@@ -27,6 +29,12 @@ namespace NeonRattie.Rat
         [SerializeField] protected float rotateAmount = 300;
 
         [SerializeField] protected Transform ratPosition;
+
+        [SerializeField]
+        protected LayerMask groundLayer;
+
+        [SerializeField]
+        protected LayerMask jumpLayer;
 
         public Transform RatPosition
         {
@@ -40,7 +48,8 @@ namespace NeonRattie.Rat
 
         public RatAnimator RatAnimator { get; protected set; }
         public NavMeshAgent NavAgent { get; protected set; }
-       
+
+        public JumpBox JumpBox { get; private set; }
 
         //other rat effects...
 
@@ -57,17 +66,22 @@ namespace NeonRattie.Rat
             get { return (-transform.right).normalized; }
         }
 
+        public Bounds Bounds { get; private set; }
 
 #if UNITY_EDITOR
         [ReadOnly, SerializeField] protected Vector3 forwardDirection;
 #endif
 
+        #region State stuff
         private RatStateMachine ratStateMachine = new RatStateMachine();
 
         public RatStateMachine StateMachine
         {
             get { return ratStateMachine; }
         }
+
+        [ReadOnly, SerializeField]
+        protected string RatState;
 
         //states and keys
         protected RatActionStates
@@ -82,6 +96,8 @@ namespace NeonRattie.Rat
         protected Climb climbing;
         protected Walk walking;
         protected WalkBack reversing;
+        #endregion
+
 
         public void TankControls()
         {
@@ -95,15 +111,35 @@ namespace NeonRattie.Rat
             }
         }
 
+        public bool TryMove (Vector3 position)
+        {
+            float distance = Vector3.Distance(position, transform.position);
+            Vector3 direction = (position - transform.position).normalized;
+            bool succes = Physics.Raycast(transform.position, direction, distance, groundLayer );
+            if ( !succes )
+            {
+                transform.position = position;
+            }
+            return succes;
+        }
 
         public bool ClimbValid()
         {
-            return false;
+            var direction = LocalForward;
+            RaycastHit info;
+            bool success = Physics.Raycast(transform.position, direction, out info, 0.2f, jumpLayer);
+            if (success)
+            {
+                JumpBox = info.transform.GetComponentInChildren<JumpBox>();
+                return JumpBox != null;
+            }
+            return false; 
+            
         }
 
         public bool IsGrounded()
         {
-            return false;
+            return GetGroundData(0.1f) != null;
         }
 
         public void WalkForward()
@@ -117,12 +153,24 @@ namespace NeonRattie.Rat
             Walk(-ForwardDirection);
         }
 
+        public Transform GetGroundData (float distance = 10000)
+        {
+            RaycastHit info;
+            bool hit = Physics.Raycast(transform.position, -transform.up, out info, distance, groundLayer);
+            if ( !hit )
+            {
+                return null;
+            }
+            return info.transform;
+        }
+
         protected virtual void OnManagementLoaded()
         {
             SceneManagement.Instance.Rat = this;
             NavAgent = GetComponentInChildren<NavMeshAgent>();
             Init();
             offsetRotation = new Vector3(-1, 0, 1);
+            Bounds = GetComponent<Collider>().bounds;
         }
 
         private void Walk(Vector3 direction)
@@ -185,6 +233,7 @@ namespace NeonRattie.Rat
            ratStateMachine.Tick();
 #if UNITY_EDITOR
             forwardDirection = ForwardDirection;
+            RatState = ratStateMachine.CurrentState.ToString();
 #endif
         }
 

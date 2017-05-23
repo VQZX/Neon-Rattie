@@ -11,30 +11,23 @@ namespace NeonRattie.Rat.RatStates
         {
             base.Enter(previousState);
             rat.RatAnimator.PlayWalk();
-            (PlayerControls.Instance as PlayerControls).Unwalk += OnUnWalk;
+            PlayerControls.Instance.Unwalk += OnUnWalk;
+            PlayerControls.Instance.Jump += OnJump;
         }
 
         public override void Tick()
         {
             base.Tick();
             rat.TankControls();
-            PlayerControls pc = (PlayerControls.Instance as PlayerControls);
-            if (pc.CheckKey(pc.JumpUp))
-            {
-                if (rat.ClimbValid())
-                {
-                    StateMachine.ChangeState(RatActionStates.Climb);
-                    return;
-                }
-                StateMachine.ChangeState(RatActionStates.Jump);
-                return;
-            }
-            //otherwise
             rat.WalkForward();
             RatRotate();
         }
 
-
+        public override void Exit (IState nextState)
+        {
+            PlayerControls.Instance.Unwalk -= OnUnWalk;
+            PlayerControls.Instance.Jump -= OnJump;
+        }
 
         private void OnUnWalk(float x)
         {
