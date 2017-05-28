@@ -58,11 +58,6 @@ namespace NeonRattie.Rat.RatStates
 
         protected void OnJump(float x)
         {
-            if (rat.ClimbValid())
-            {
-                StateMachine.ChangeState(RatActionStates.Climb);
-                return;
-            }
             StateMachine.ChangeState(RatActionStates.Jump);
         }
 

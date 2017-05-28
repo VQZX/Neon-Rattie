@@ -34,6 +34,7 @@ namespace NeonRattie.Rat.RatStates
                 return;
             }
             rat.RatAnimator.PlaySearchingIdle();
+            RatRotate();
             searchTime = new Timer(resetTime, UndoSearch);
         }
 

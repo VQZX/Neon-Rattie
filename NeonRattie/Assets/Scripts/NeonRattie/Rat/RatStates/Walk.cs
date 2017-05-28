@@ -21,6 +21,10 @@ namespace NeonRattie.Rat.RatStates
             rat.TankControls();
             rat.WalkForward();
             RatRotate();
+            if (rat.ClimbValid())
+            {
+
+            }
         }
 
         public override void Exit (IState nextState)
