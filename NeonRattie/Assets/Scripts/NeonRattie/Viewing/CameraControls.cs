@@ -73,9 +73,10 @@ namespace NeonRattie.Viewing
             }
             Debug.Log("Not inside");
             //TODO: add acceleration to prevent snapping
-            LookAt();
             AlignWithRat();
+            LookAt();
             idleForward = transform.forward;
+            //SlowLookAtRat();
         }
 
         protected void FreeControl()
@@ -113,6 +114,7 @@ namespace NeonRattie.Viewing
             Vector3 currentRot = transform.rotation.eulerAngles;
             currentRot.z = originalRot.z;
             transform.rotation = new Quaternion {eulerAngles = currentRot};
+            SlowLookAtRat();
         }
 
         private bool VerticalValid(Vector3 next)
@@ -149,6 +151,13 @@ namespace NeonRattie.Viewing
             var avg = new Vector3(ratLook.x, look.y, ratLook.z);
             Vector3 current = transform.position;
             transform.position = Vector3.Lerp(current, avg, Time.deltaTime * followData.PitchRotation * 25);
+        }
+
+        private void SlowLookAtRat ()
+        {
+            Vector3 idealPlayerPosition = transform.position + transform.forward * followData.DistanceFromPlayer;
+            Vector3 difference = (rat.transform.position - idealPlayerPosition);
+            transform.position += difference;
         }
 
         private void LookAt()
