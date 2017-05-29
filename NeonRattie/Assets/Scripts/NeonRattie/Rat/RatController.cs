@@ -69,6 +69,8 @@ namespace NeonRattie.Rat
 
         public Bounds Bounds { get; private set; }
 
+        public Action DrawGizmos;
+
 #if UNITY_EDITOR
         [ReadOnly, SerializeField] protected Vector3 forwardDirection;
 #endif
@@ -119,30 +121,52 @@ namespace NeonRattie.Rat
 
         public bool TryMove (Vector3 position)
         {
+            return TryMove(position, groundLayer);
+        }
+
+        public bool TryMove(Vector3 position, LayerMask? surface)
+        {
+            if ( surface == null )
+            {
+                surface = LayerMask.NameToLayer("Everything");
+            }
             float distance = Vector3.Distance(position, transform.position);
             Vector3 direction = (position - transform.position).normalized;
-            bool succes = Physics.Raycast(transform.position, direction, distance, groundLayer );
-            if ( !succes )
+            RaycastHit hit;
+            bool success = Physics.Raycast(transform.position, direction, out hit, distance, surface.Value);
+
+            if (!success)
             {
                 transform.position = position;
             }
-            return succes;
+            else
+            {
+                if ( hit.collider.gameObject == gameObject )
+                {
+                    success = true;
+                    transform.position = position;
+                }
+            }
+            return success;
         }
 
         public bool ClimbValid()
         {
             var direction = LocalForward;
             RaycastHit info;
-            bool success = Physics.Raycast(transform.position, direction, out info);
+            bool success = Physics.Raycast(transform.position, direction, out info, 5f, 1 << LayerMask.NameToLayer("Interactable"));
             Debug.LogFormat("ClimbValid() -- {0}", success);
             if (success)
             {
                 JumpBox = info.transform.GetComponentInChildren<JumpBox>();
                 return JumpBox != null;
             }
+            if ( JumpBox != null )
+            {
+                JumpBox.Select(false);
+            }
             JumpBox = null;
             return false; 
-            
         }
 
         public bool IsGrounded()
@@ -150,15 +174,24 @@ namespace NeonRattie.Rat
             return GetGroundData(0.1f) != null;
         }
 
+        public void WalkForward (Vector3 forward)
+        {
+            Walk(forward);
+        }
+
+        public void WalkBackward (Vector3 forward)
+        {
+            Walk(-forward);
+        }
+
         public void WalkForward()
         {
-
-            Walk(ForwardDirection);
+            WalkForward(ForwardDirection);
         }
 
         public void WalkBackward()
         {
-            Walk(-ForwardDirection);
+            WalkBackward(ForwardDirection);
         }
 
         public Transform GetGroundData (float distance = 10000)
@@ -170,6 +203,15 @@ namespace NeonRattie.Rat
                 return null;
             }
             return info.transform;
+        }
+
+        public Quaternion OrientateByGroundNormal (Vector3 normal)
+        {
+            Vector3 down = -transform.up;
+            Vector3 tangent = Vector3.Cross(down, LocalForward);
+            float angle = Vector3.Angle(down, normal);
+            Quaternion result = Quaternion.AngleAxis(angle, tangent);
+            return result;
         }
 
         protected virtual void OnManagementLoaded()
@@ -236,6 +278,16 @@ namespace NeonRattie.Rat
             throw new System.NotImplementedException();
         }
 
+        public void AddDrawGizmos (Action action)
+        {
+            DrawGizmos += action;                   
+        }
+
+        public void RemoveDrawGizmos (Action action)
+        {
+            DrawGizmos -= action;
+        }
+
         protected virtual void Update()
         {
             ratStateMachine.Tick();
@@ -268,6 +320,10 @@ namespace NeonRattie.Rat
         protected virtual void OnDrawGizmos()
         {
             Gizmos.DrawLine(transform.position, transform.position + LocalForward * 10);
+            if ( DrawGizmos != null )
+            {
+                DrawGizmos();
+            }
         }
 
         private void UpdateVelocity(float deltaTime)
@@ -277,7 +333,5 @@ namespace NeonRattie.Rat
             Velocity = difference / deltaTime;
             previousPosition = currentPosition;
         }
-
-       
     }
 }

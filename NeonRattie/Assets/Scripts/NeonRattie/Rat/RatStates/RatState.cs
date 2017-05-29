@@ -74,5 +74,12 @@ namespace NeonRattie.Rat.RatStates
                 groundPosition = ground.position;
             }
         }
+
+        protected void FallTowards()
+        {
+            Vector3 point = rat.transform.position - rat.transform.up;
+            bool fallTowards = rat.TryMove(point);
+            Debug.LogFormat("FallTowards: {0}", fallTowards);
+        }
     }
 }

@@ -23,7 +23,7 @@ namespace NeonRattie.Rat.RatStates
             RatRotate();
             if (rat.ClimbValid())
             {
-
+                rat.StateMachine.ChangeState(RatActionStates.Climb);
             }
         }
 

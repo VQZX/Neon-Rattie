@@ -2,6 +2,7 @@
 using Flusk.Management;
 using Flusk.Utility;
 using NeonRattie.Controls;
+using UnityEngine;
 
 namespace NeonRattie.Rat.RatStates
 {
@@ -25,6 +26,10 @@ namespace NeonRattie.Rat.RatStates
         {
             base.Tick();
             rat.TankControls();
+            FallTowards();
+            Quaternion rotation = rat.OrientateByGroundNormal(Vector3.down);
+            var current = rat.transform.rotation;
+            rat.transform.rotation = rotation;
             if (MouseManager.Instance == null)
             {
                 return;
