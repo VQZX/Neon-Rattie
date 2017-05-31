@@ -147,7 +147,7 @@ namespace NeonRattie.Rat
 
         public bool IsGrounded()
         {
-            return GetGroundData(0.1f) != null;
+            return GetGroundData(0.1f).transform != null;
         }
 
         public void WalkForward()
@@ -161,15 +161,11 @@ namespace NeonRattie.Rat
             Walk(-ForwardDirection);
         }
 
-        public Transform GetGroundData (float distance = 10000)
+        public RaycastHit GetGroundData (float distance = 10000)
         {
             RaycastHit info;
             bool hit = Physics.Raycast(transform.position, -transform.up, out info, distance, groundLayer);
-            if ( !hit )
-            {
-                return null;
-            }
-            return info.transform;
+            return info;
         }
 
         protected virtual void OnManagementLoaded()

@@ -63,7 +63,7 @@ namespace NeonRattie.Rat.RatStates
 
         protected void GetGroundData ()
         {
-            var ground = rat.GetGroundData();
+            var ground = rat.GetGroundData().transform;
             if (ground == null)
             {
                 //TODO: immediately change to another state

@@ -32,7 +32,7 @@ namespace NeonRattie.Rat.RatStates
         {
             float jumpMultiplier = rat.JumpArc.Evaluate(stateTime);
             Vector3 force = (rat.JumpForce * -rat.Gravity.normalized * jumpMultiplier);
-            return rat.TryMove(groundPosition + force);
+            return rat.TryMove(rat.GetGroundData().point + force);
         }
     }
 }
