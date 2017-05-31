@@ -25,6 +25,7 @@ namespace NeonRattie.Rat.RatStates
             {
                 rat.StateMachine.ChangeState(RatActionStates.Climb);
             }
+            FallTowards();
         }
 
         public override void Exit (IState nextState)

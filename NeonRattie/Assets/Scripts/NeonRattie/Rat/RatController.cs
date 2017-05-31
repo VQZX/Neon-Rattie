@@ -56,6 +56,8 @@ namespace NeonRattie.Rat
 
         private Vector3 offsetRotation;
 
+        public Vector3 LowestPoint { get; protected set; }
+
         //TODO: right editor script so these can be configurable!
         public Vector3 ForwardDirection
         {
@@ -70,6 +72,7 @@ namespace NeonRattie.Rat
         public Bounds Bounds { get; private set; }
 
         public Action DrawGizmos;
+
 
 #if UNITY_EDITOR
         [ReadOnly, SerializeField] protected Vector3 forwardDirection;
@@ -101,6 +104,10 @@ namespace NeonRattie.Rat
         protected WalkBack reversing;
         #endregion
 
+        public void ChangeState (RatActionStates state)
+        {
+            StateMachine.ChangeState(state);
+        }
 
         public void TankControls()
         {
@@ -315,6 +322,7 @@ namespace NeonRattie.Rat
         protected virtual void LateUpdate()
         {
             UpdateVelocity(Time.deltaTime);
+            FindLowestPoint();
         }
         
         protected virtual void OnDrawGizmos()
@@ -332,6 +340,12 @@ namespace NeonRattie.Rat
             Vector3 difference = previousPosition - currentPosition;
             Velocity = difference / deltaTime;
             previousPosition = currentPosition;
+        }
+
+        private void FindLowestPoint ()
+        {
+            Vector3 point = transform.position - Vector3.down * 10;
+            LowestPoint = Bounds.ClosestPoint(point);
         }
     }
 }
