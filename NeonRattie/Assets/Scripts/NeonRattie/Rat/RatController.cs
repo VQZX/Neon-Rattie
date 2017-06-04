@@ -37,6 +37,22 @@ namespace NeonRattie.Rat
         [SerializeField]
         protected LayerMask jumpLayer;
 
+        
+        //climbing data
+        [SerializeField] protected AnimationCurve climbUpCurve;
+
+        public AnimationCurve ClimbUpCurve
+        {
+            get { return climbUpCurve; }
+        }
+
+        [SerializeField] protected AnimationCurve forwardMotion;
+
+        public AnimationCurve ForwardMotion
+        {
+            get { return forwardMotion; }
+        }
+        
         public Transform RatPosition
         {
             get { return ratPosition; }
@@ -123,7 +139,7 @@ namespace NeonRattie.Rat
 
         public void Move(Vector3 position)
         {
-            throw new NotImplementedException();
+            transform.position = position;
         }
 
         public bool TryMove (Vector3 position)
