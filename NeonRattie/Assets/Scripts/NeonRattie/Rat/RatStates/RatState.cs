@@ -1,4 +1,5 @@
-﻿using Flusk.Management;
+﻿using System;
+using Flusk.Management;
 using Flusk.Utility;
 using UnityEngine;
 using RatBrain = NeonRattie.Rat.RatController;
@@ -73,6 +74,24 @@ namespace NeonRattie.Rat.RatStates
             {
                 groundPosition = ground.position;
             }
+        }
+
+        protected void FallTowards (Vector3 point)
+        {
+            rat.TryMove(point);
+        }
+
+        protected void FallTowards()
+        {
+            Vector3 point = rat.transform.position - rat.transform.up;
+            bool fallTowards = rat.TryMove(point);
+            Debug.LogFormat("FallTowards: {0}", fallTowards);
+        }
+
+        protected void FallDown ()
+        {
+            bool fallTowards = rat.TryMove(rat.LowestPoint - Vector3.down * 0.1f);
+            Debug.LogFormat("FallTowards: {0}", fallTowards);
         }
     }
 }

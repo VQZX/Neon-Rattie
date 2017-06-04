@@ -5,7 +5,6 @@ using UnityEngine;
 
 namespace NeonRattie.Objects
 {
-    [RequireComponent (typeof(BoxCollider))]
     [RequireComponent(typeof(Rigidbody))]
     public class JumpBox : NeonRattieBehaviour
     {

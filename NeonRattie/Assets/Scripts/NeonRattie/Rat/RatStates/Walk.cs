@@ -23,8 +23,9 @@ namespace NeonRattie.Rat.RatStates
             RatRotate();
             if (rat.ClimbValid())
             {
-
+                rat.StateMachine.ChangeState(RatActionStates.Climb);
             }
+            FallTowards();
         }
 
         public override void Exit (IState nextState)
