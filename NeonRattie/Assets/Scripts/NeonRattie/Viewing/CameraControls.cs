@@ -119,11 +119,9 @@ namespace NeonRattie.Viewing
         {
             Vector3 newPosition = CalculatePositionByRotation(rotation);
             float heightDifference = (newPosition.y - rat.transform.position.y);
-            Debug.Log("NewPosition "+newPosition);
             float sign = Mathf.Sign(newPosition.y - transform.position.y);
             if (sign > 0)
             {
-                Debug.LogFormat("Height: {0} > {1}", heightDifference, freeControl.UpMovement);
                 return heightDifference < freeControl.UpMovement;
             }
             return Math.Abs(heightDifference) < freeControl.DownMovement;
@@ -141,7 +139,6 @@ namespace NeonRattie.Viewing
         private void AlignWithRat()
         {
             CorrectHeightFromGround();
-            //the ray that we follow
             Ray lookingRay = new Ray(rat.RatPosition.position, -initDirectionToRat);
             Ray ratRay = new Ray(rat.RatPosition.position, -rat.LocalForward);
             Vector3 look = lookingRay.GetPoint(followData.DistanceFromPlayer);
