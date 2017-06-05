@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using Flusk.Extensions;
 using Flusk.Utility;
@@ -26,7 +27,7 @@ namespace NeonRattie.Rat.RatStates
 
         private Vector3[] drawPositions;
 
-        private Queue<Vector3> arcPositions = new Queue<Vector3>(100);
+        private readonly Queue<Vector3> arcPositions = new Queue<Vector3>(100);
 
         public override void Enter (IState previousState )
         {
@@ -64,6 +65,12 @@ namespace NeonRattie.Rat.RatStates
                 return;
             }
             rat.ChangeState(RatActionStates.Idle);
+        }
+
+        public override void Exit(IState state)
+        {
+            base.Exit(state);
+            rat.RemoveDrawGizmos(DrawGizmos);
         }
 
 
