@@ -46,8 +46,15 @@ namespace NeonRattie.Rat.RatStates
                 return;
             }
             Vector2 delta = MouseManager.Instance.Delta;
-            float angle = Mathf.Atan2(-delta.y, delta.x);
-            rat.RotateRat(angle);
+            float deltaX = delta.x;
+            Vector3 axis = Vector3.up;
+            if (deltaX > 0)
+            {
+                deltaX = -deltaX;
+                axis = Vector3.down;
+            }
+            float angle = Mathf.Atan2(-delta.y, deltaX);
+            rat.RotateRat(angle, axis);
         }
 
         protected void OnJump(float x)
