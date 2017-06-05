@@ -166,8 +166,9 @@ namespace NeonRattie.Rat
             Debug.DrawRay(point, direction, Color.red);
             RaycastHit hit;
             bool success = Physics.Raycast(ray, out hit, distance, surface.Value);
-
-            if (!success)
+            Collider[] hits = Physics.OverlapBox(position, RatCollider.bounds.extents, transform.rotation, surface.Value);
+            success = hits.Length == 0;
+            if (success)
             {
                 transform.position = position;
             }
