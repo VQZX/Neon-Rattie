@@ -1,4 +1,5 @@
-﻿using Flusk.Management;
+﻿using System;
+using Flusk.Management;
 using NeonRattie.Controls;
 using NeonRattie.Rat;
 using NeonRattie.Rat.RatStates;
@@ -102,7 +103,7 @@ namespace NeonRattie.Viewing
             {
                 Quaternion rot = transform.rotation;
                 rot *= Quaternion.AngleAxis(freeControl.RotationSpeed * delta.magnitude, axis);
-                if (VerticalValid(rot.eulerAngles))
+                if (VerticalValid(rot))
                 {
                     return;
                 }
@@ -114,18 +115,18 @@ namespace NeonRattie.Viewing
             SlowLookAtRat();
         }
 
-        private bool VerticalValid(Vector3 next)
+        private bool VerticalValid(Quaternion rotation)
         {
-            float origX = originalRot.x;
-            float currentX = next.x;
-            if (currentX > 180)
+            Vector3 newPosition = CalculatePositionByRotation(rotation);
+            float heightDifference = (newPosition.y - rat.transform.position.y);
+            Debug.Log("NewPosition "+newPosition);
+            float sign = Mathf.Sign(newPosition.y - transform.position.y);
+            if (sign > 0)
             {
-                currentX -= 360;
+                Debug.LogFormat("Height: {0} > {1}", heightDifference, freeControl.UpMovement);
+                return heightDifference < freeControl.UpMovement;
             }
-            float difference = Mathf.Abs(origX - currentX);
-            bool lessThan = difference > freeControl.DownMovement;
-            bool moreThan = difference > freeControl.UpMovement;
-            return lessThan || moreThan;
+            return Math.Abs(heightDifference) < freeControl.DownMovement;
         }
 
 
@@ -152,7 +153,7 @@ namespace NeonRattie.Viewing
 
         private void SlowLookAtRat ()
         {
-            Vector3 idealPlayerPosition = transform.position + transform.forward * followData.DistanceFromPlayer;
+            Vector3 idealPlayerPosition = CalculatePositionByRotation(transform.rotation);
             Vector3 difference = (rat.transform.position - idealPlayerPosition);
             transform.position += difference;
         }
@@ -164,6 +165,13 @@ namespace NeonRattie.Viewing
             Quaternion current = transform.rotation;
             Quaternion next = Quaternion.LookRotation(direction);
             transform.rotation = Quaternion.Slerp(current, next, slerpTime);
+        }
+
+        private Vector3 CalculatePositionByRotation(Quaternion rotation)
+        {
+            Vector3 newForward = rotation * Vector3.forward;
+            Vector3 newPosition = transform.position + newForward * followData.DistanceFromPlayer;
+            return newPosition;
         }
     }
 }

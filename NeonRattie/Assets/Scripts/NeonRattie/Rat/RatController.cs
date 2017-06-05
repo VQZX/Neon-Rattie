@@ -6,7 +6,6 @@ using NeonRattie.Rat.RatStates;
 using NeonRattie.Shared;
 using UnityEngine;
 using UnityEngine.AI;
-using UnityEngine.Video;
 
 namespace NeonRattie.Rat
 {
@@ -223,15 +222,6 @@ namespace NeonRattie.Rat
             RaycastHit info;
             bool hit = Physics.Raycast(transform.position, -transform.up, out info, distance, groundLayer);
             return info;
-        }
-
-        public Quaternion OrientateByGroundNormal (Vector3 normal)
-        {
-            Vector3 down = -transform.up;
-            Vector3 tangent = Vector3.Cross(down, LocalForward);
-            float angle = Vector3.Angle(down, normal);
-            Quaternion result = Quaternion.AngleAxis(angle, tangent);
-            return result;
         }
 
         protected virtual void OnManagementLoaded()
