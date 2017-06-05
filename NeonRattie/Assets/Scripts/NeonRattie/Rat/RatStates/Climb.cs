@@ -74,7 +74,7 @@ namespace NeonRattie.Rat.RatStates
         private void CalculateClimbData()
         {
             jumpBox = rat.JumpBox;
-            goal = jumpBox.GetJumpPoint(rat.transform);
+            goal = jumpBox.GetJumpPoint(rat);
             direction = (goal - rat.transform.position).normalized;
             
             direction.y = 0;

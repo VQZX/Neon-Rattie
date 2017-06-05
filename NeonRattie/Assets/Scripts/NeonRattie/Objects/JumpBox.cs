@@ -1,5 +1,6 @@
 ﻿using Assets.Scripts.Flusk.DataHelp;
 using NeonRattie.Controls;
+using NeonRattie.Rat;
 using NeonRattie.Shared;
 using UnityEngine;
 
@@ -26,9 +27,24 @@ namespace NeonRattie.Objects
             material.color = state ? Color.red : Color.white;
         }
 
-        public Vector3 GetJumpPoint(Transform climber)
+        public Vector3 GetJumpPoint(RatController climber)
         {
-            return jumpPoint.position;
+            Vector3 output = jumpPoint.position;
+            Vector3 normal = -climber.LocalForward.normalized;
+            Plane plane = new Plane(normal, jumpPoint.position);
+            Ray ray = new Ray(climber.transform.position, -normal);
+            float distance;
+            if (plane.Raycast(ray, out distance))
+            {
+                output = ray.GetPoint(distance);
+                RaycastHit hitInfo;
+                Ray downRay = new Ray(output + Vector3.up * 10, Vector3.down);
+                if (Physics.Raycast(downRay, out hitInfo))
+                {
+                    output = hitInfo.point + Vector3.up * climber.Bounds.extents.y;
+                }
+            }
+            return output;
         }
 
         public Curve CalculateCurve (Collider inComingClimber)
