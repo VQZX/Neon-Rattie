@@ -134,11 +134,11 @@ namespace NeonRattie.Rat
         {
             if (PlayerControls.Instance.CheckKey(KeyCode.A))
             {
-                RotateRat(-rotateAmount * Time.deltaTime * Mathf.Deg2Rad);
+                RotateRat(-rotateAmount * Time.deltaTime);
             }
             if (PlayerControls.Instance.CheckKey(KeyCode.D))
             {
-                RotateRat(rotateAmount * Time.deltaTime * Mathf.Deg2Rad);
+                RotateRat(rotateAmount * Time.deltaTime);
             }
         }
 
@@ -270,12 +270,18 @@ namespace NeonRattie.Rat
         }
 
         /// <summary>
-        /// rotate around y-axis
+        /// 
         /// </summary>
         /// <param name="angle"></param>
+        /// <param name="axis"></param>
+        public virtual void RotateRat(float angle, Vector3 axis)
+        {
+            transform.RotateAround(transform.position, axis, angle);
+        }
+
         public virtual void RotateRat(float angle)
         {
-            transform.RotateAround(transform.position, Vector3.up, angle);
+            RotateRat(angle, Vector3.up);
         }
 
         public override void Destroy()

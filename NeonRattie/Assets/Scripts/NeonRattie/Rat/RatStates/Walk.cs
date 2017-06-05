@@ -1,7 +1,5 @@
-﻿using Flusk.Management;
-using Flusk.Utility;
+﻿using Flusk.Utility;
 using NeonRattie.Controls;
-using UnityEngine;
 
 namespace NeonRattie.Rat.RatStates
 {

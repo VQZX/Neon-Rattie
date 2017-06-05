@@ -25,7 +25,7 @@ namespace NeonRattie.Rat
 
         public void PlaySearchingIdle ()
         {
-            Debug.Log("Play Searching Idle");
+            //Debug.Log("Play Searching Idle");
         }
 
         public void PlayWalk()

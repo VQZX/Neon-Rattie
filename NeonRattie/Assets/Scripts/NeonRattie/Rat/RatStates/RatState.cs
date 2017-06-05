@@ -45,15 +45,8 @@ namespace NeonRattie.Rat.RatStates
             {
                 return;
             }
-            var rotationDelta = MouseManager.Instance.Delta;
-            if (Math.Abs(rotationDelta.magnitude) < 0.00001f)
-            {
-                return;
-            }
-            //TODO: allow for player configuration
-            Vector3 euler;
-            float angle;
-            MouseManager.Instance.GetMotionData(out euler, out angle);
+            Vector2 delta = MouseManager.Instance.Delta;
+            float angle = Mathf.Atan2(-delta.y, delta.x);
             rat.RotateRat(angle);
         }
 
