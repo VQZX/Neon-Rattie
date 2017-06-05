@@ -6,6 +6,7 @@ using NeonRattie.Rat.RatStates;
 using NeonRattie.Shared;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.Video;
 
 namespace NeonRattie.Rat
 {
@@ -85,9 +86,14 @@ namespace NeonRattie.Rat
             get { return (-transform.right).normalized; }
         }
 
-        public Bounds Bounds { get; private set; }
+        public Bounds Bounds
+        {
+            get { return RatCollider.bounds; }
+            
+        }
+        public Collider RatCollider { get; private set; }
 
-        public Action DrawGizmos;
+        public event Action DrawGizmos;
 
 
 #if UNITY_EDITOR
@@ -153,22 +159,17 @@ namespace NeonRattie.Rat
             {
                 surface = LayerMask.NameToLayer("Everything");
             }
-            float distance = Vector3.Distance(position, transform.position);
-            Vector3 direction = (position - transform.position).normalized;
+            Vector3 point = RatCollider.bounds.ClosestPoint(position);
+            float distance = (position - point).magnitude;
+            Vector3 direction = (position - point).normalized;
+            Ray ray = new Ray(point, direction);        
+            Debug.DrawRay(point, direction, Color.red);
             RaycastHit hit;
-            bool success = Physics.Raycast(transform.position, direction, out hit, distance, surface.Value);
+            bool success = Physics.Raycast(ray, out hit, distance, surface.Value);
 
             if (!success)
             {
                 transform.position = position;
-            }
-            else
-            {
-                if ( hit.collider.gameObject == gameObject )
-                {
-                    success = true;
-                    transform.position = position;
-                }
             }
             return success;
         }
@@ -238,7 +239,7 @@ namespace NeonRattie.Rat
             NavAgent = GetComponentInChildren<NavMeshAgent>();
             Init();
             offsetRotation = new Vector3(-1, 0, 1);
-            Bounds = GetComponent<Collider>().bounds;
+            RatCollider = GetComponent<Collider>();
         }
 
         private void Walk(Vector3 direction)
@@ -303,7 +304,10 @@ namespace NeonRattie.Rat
 
         public void RemoveDrawGizmos (Action action)
         {
-            DrawGizmos -= action;
+            if (DrawGizmos != null)
+            {
+                DrawGizmos -= action;
+            }
         }
 
         protected virtual void Update()
