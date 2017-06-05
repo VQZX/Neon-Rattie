@@ -1,4 +1,5 @@
 ﻿using Assets.Scripts.Flusk.Utility;
+using Flusk.Controls;
 using Flusk.Management;
 using Flusk.Utility;
 using NeonRattie.Controls;
@@ -27,9 +28,22 @@ namespace NeonRattie.Rat.RatStates
             base.Tick();
             rat.TankControls();
             FallTowards();
-            Quaternion rotation = rat.OrientateByGroundNormal(Vector3.down);
-            var current = rat.transform.rotation;
-            rat.transform.rotation = rotation;
+            RatRotate();
+            
+            var playerControls = PlayerControls.Instance;
+            var keyboardControls = KeyboardControls.Instance;
+
+            if (playerControls.CheckKey(playerControls.Forward))
+            {
+                rat.ChangeState(RatActionStates.Walk);
+                Debug.Log("[IDLE] Change To walk");
+                return;
+            }
+            if (playerControls.CheckKey(playerControls.Back))
+            {
+                rat.ChangeState(RatActionStates.Reverse);
+            }
+            
             if (MouseManager.Instance == null)
             {
                 return;
@@ -39,7 +53,6 @@ namespace NeonRattie.Rat.RatStates
                 return;
             }
             rat.RatAnimator.PlaySearchingIdle();
-            RatRotate();
             searchTime = new Timer(resetTime, UndoSearch);
         }
 

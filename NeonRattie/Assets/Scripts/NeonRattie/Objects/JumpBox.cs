@@ -24,12 +24,17 @@ namespace NeonRattie.Objects
         public void Select (bool state = true)
         {
             material.color = state ? Color.red : Color.white;
-        } 
+        }
 
-        public Curve CalculateCurve (Collider collider)
+        public Vector3 GetJumpPoint(Transform climber)
+        {
+            return jumpPoint.position;
+        }
+
+        public Curve CalculateCurve (Collider inComingClimber)
         {
             Curve curve = new Curve();
-            Vector3 firstPoint = collider.transform.position;
+            Vector3 firstPoint = inComingClimber.transform.position;
             Vector3 lastPoint = jumpPoint.position;
             curve.Add(firstPoint);
             float timing = 0;

@@ -46,7 +46,7 @@ namespace NeonRattie.Rat.RatStates
                 return;
             }
             var rotationDelta = MouseManager.Instance.Delta;
-            if (rotationDelta.magnitude == 0)
+            if (Math.Abs(rotationDelta.magnitude) < 0.00001f)
             {
                 return;
             }
@@ -85,13 +85,11 @@ namespace NeonRattie.Rat.RatStates
         {
             Vector3 point = rat.transform.position - rat.transform.up;
             bool fallTowards = rat.TryMove(point);
-            Debug.LogFormat("FallTowards: {0}", fallTowards);
         }
 
         protected void FallDown ()
         {
             bool fallTowards = rat.TryMove(rat.LowestPoint - Vector3.down * 0.1f);
-            Debug.LogFormat("FallTowards: {0}", fallTowards);
         }
     }
 }

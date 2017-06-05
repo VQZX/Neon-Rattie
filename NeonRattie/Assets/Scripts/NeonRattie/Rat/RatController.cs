@@ -178,7 +178,6 @@ namespace NeonRattie.Rat
             var direction = LocalForward;
             RaycastHit info;
             bool success = Physics.Raycast(transform.position, direction, out info, 5f, 1 << LayerMask.NameToLayer("Interactable"));
-            Debug.LogFormat("ClimbValid() -- {0}", success);
             if (success)
             {
                 JumpBox = info.transform.GetComponentInChildren<JumpBox>();

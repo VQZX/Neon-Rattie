@@ -16,7 +16,10 @@ namespace NeonRattie.Rat.RatStates
         public override void Tick()
         {
             base.Tick();
+            rat.TankControls();
             rat.WalkBackward();
+            RatRotate();
+            FallTowards();
         }
 
         public override void Exit(IState state)

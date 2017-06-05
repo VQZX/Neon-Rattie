@@ -68,15 +68,12 @@ namespace NeonRattie.Viewing
         {
             if (delayCollider.IsInside(rat.RatPosition.transform) )
             {
-                Debug.Log("Is inside");
                 return;
             }
-            Debug.Log("Not inside");
             //TODO: add acceleration to prevent snapping
             AlignWithRat();
             LookAt();
             idleForward = transform.forward;
-            //SlowLookAtRat();
         }
 
         protected void FreeControl()

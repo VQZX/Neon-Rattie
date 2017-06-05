@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Runtime.InteropServices;
+﻿using System.Collections.Generic;
 using Flusk.Extensions;
 using Flusk.Utility;
 using NeonRattie.Controls;
@@ -11,7 +9,7 @@ namespace NeonRattie.Rat.RatStates
 {
     public class Climb : RatState, IActionState
     {
-        private float negligibleDistance = 0.1f;
+        private readonly float negligibleDistance = 0.1f;
         
         private Curve curve;
         private CurveMotion<RatController> curveMotion;
@@ -41,17 +39,7 @@ namespace NeonRattie.Rat.RatStates
                 rat.StateMachine.ChangeState(RatActionStates.Idle);
                 return;
             }
-            jumpBox = rat.JumpBox;
-            goal = jumpBox.JumpPoint.position;
-            direction = (goal - rat.transform.position).normalized;
-            
-            direction.y = 0;
-            var towards = (goal - rat.transform.position);
-            boxHeight = towards.y;
-            towards.y = 0;
-            magnitude = towards.magnitude;
-            initialPoint = rat.transform.position;
-
+            CalculateClimbData();
             CalculatePositions();
             rat.AddDrawGizmos(DrawGizmos);
         }
@@ -81,6 +69,20 @@ namespace NeonRattie.Rat.RatStates
             {
                 Gizmos.DrawSphere(drawPositions[i], 0.1f);
             }
+        }
+
+        private void CalculateClimbData()
+        {
+            jumpBox = rat.JumpBox;
+            goal = jumpBox.GetJumpPoint(rat.transform);
+            direction = (goal - rat.transform.position).normalized;
+            
+            direction.y = 0;
+            var towards = (goal - rat.transform.position);
+            boxHeight = towards.y;
+            towards.y = 0;
+            magnitude = towards.magnitude;
+            initialPoint = rat.transform.position;
         }
 
         private Vector3 GetUpValue(float deltaTime)

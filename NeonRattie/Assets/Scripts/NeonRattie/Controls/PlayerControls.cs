@@ -64,7 +64,7 @@ namespace NeonRattie.Controls
 
         protected virtual void Start ()
         {
-            var kc = (KeyboardControls.Instance as KeyboardControls);
+            var kc = KeyboardControls.Instance;
             if (kc == null)
             {
                 return;
