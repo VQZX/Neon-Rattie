@@ -25,9 +25,10 @@ namespace NeonRattie.Rat
             isRotating = true;
         }
 
-        public void SetLookDirection(Vector3 direction, Vector3 upAxis)
+        public void SetLookDirection(Vector3 direction, Vector3 upAxis, float rotateSpeed = 1)
         {
-            transform.rotation = Quaternion.LookRotation(direction, upAxis);
+            goal = Quaternion.LookRotation(direction, upAxis);
+            transform.rotation = goal;
         }
         
         protected virtual void Rotate()
@@ -39,7 +40,7 @@ namespace NeonRattie.Rat
             Quaternion current = transform.rotation;
             Quaternion next = Quaternion.Slerp(current, goal, slerpTime);
             transform.rotation = next;
-            slerpTime += Time.deltaTime;
+            slerpTime += Time.deltaTime * speed;
             Quaternion difference = next.Difference(goal);
             if (difference.eulerAngles.magnitude > 0.1f)
             {

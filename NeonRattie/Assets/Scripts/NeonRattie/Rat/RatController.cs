@@ -124,31 +124,17 @@ namespace NeonRattie.Rat
             idle = RatActionStates.Idle,
             jump = RatActionStates.Jump,
             climb = RatActionStates.Climb,
-            walk = RatActionStates.Walk,
-            reverse = RatActionStates.Reverse;
+            walk = RatActionStates.Walk;
 
         protected Idle idling;
         protected Jump jumping;
         protected Climb climbing;
         protected Walk walking;
-        protected WalkBack reversing;
         #endregion
 
         public void ChangeState (RatActionStates state)
         {
             StateMachine.ChangeState(state);
-        }
-
-        public void TankControls()
-        {
-            if (PlayerControls.Instance.CheckKey(KeyCode.A))
-            {
-                RotateRat(-rotateAmount * Time.deltaTime);
-            }
-            if (PlayerControls.Instance.CheckKey(KeyCode.D))
-            {
-                RotateRat(rotateAmount * Time.deltaTime);
-            }
         }
 
         public void Move(Vector3 position)
@@ -217,25 +203,6 @@ namespace NeonRattie.Rat
             NavAgent.SetDestination(transform.position + direction * walkSpeed);
         }
 
-        public void WalkForward (Vector3 forward)
-        {
-            Walk(forward);
-        }
-
-        public void WalkBackward (Vector3 forward)
-        {
-            Walk(-forward);
-        }
-
-        public void WalkForward()
-        {
-            WalkForward(ForwardDirection);
-        }
-
-        public void WalkBackward()
-        {
-            WalkBackward(ForwardDirection);
-        }
 
         public RaycastHit GetGroundData (float distance = 10000)
         {
@@ -265,19 +232,16 @@ namespace NeonRattie.Rat
             walking = new Walk();
             jumping = new Jump();
             climbing = new Climb();
-            reversing = new WalkBack();
 
             idling.Init(this, ratStateMachine);
             walking.Init(this, ratStateMachine);
             jumping.Init(this, ratStateMachine);
             climbing.Init(this, ratStateMachine);
-            reversing.Init(this, ratStateMachine);
 
             ratStateMachine.AddState(idle, idling);
             ratStateMachine.AddState(walk, walking);
             ratStateMachine.AddState(jump, jumping);
             ratStateMachine.AddState(climb, climbing);
-            ratStateMachine.AddState(reverse, reversing);
             ratStateMachine.ChangeState(idle);
         }
 
@@ -332,6 +296,14 @@ namespace NeonRattie.Rat
             RatState = ratStateMachine.CurrentState.ToString();
 #endif
         }
+        
+        protected virtual void LateUpdate()
+        {
+            UpdateVelocity(Time.deltaTime);
+            FindLowestPoint();
+            WalkDirection = Vector3.zero;
+        }
+        
 
         protected virtual void OnEnable()
         {
@@ -345,11 +317,7 @@ namespace NeonRattie.Rat
             PlayerControls.Instance.Walk -= OnWalk;
         }
 
-        protected virtual void LateUpdate()
-        {
-            UpdateVelocity(Time.deltaTime);
-            FindLowestPoint();
-        }
+       
         
         protected virtual void OnDrawGizmos()
         {

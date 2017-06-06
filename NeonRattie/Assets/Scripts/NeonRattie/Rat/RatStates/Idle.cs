@@ -37,10 +37,6 @@ namespace NeonRattie.Rat.RatStates
                 Debug.Log("[IDLE] Change To walk");
                 return;
             }
-            if (playerControls.CheckKey(playerControls.Back))
-            {
-                rat.ChangeState(RatActionStates.Reverse);
-            }
             
             if (MouseManager.Instance == null)
             {
