@@ -5,6 +5,7 @@ using Flusk.Management;
 using NeonRattie.Controls;
 using NeonRattie.Management;
 using NeonRattie.Objects;
+using NeonRattie.Rat.Data;
 using NeonRattie.Rat.RatStates;
 using NeonRattie.Shared;
 using UnityEngine;
@@ -59,7 +60,13 @@ namespace NeonRattie.Rat
         {
             get { return forwardMotion; }
         }
-        
+
+        [SerializeField] protected AnimationMotion jumpOffCurve;
+        public AnimationMotion JumpOffCurve
+        {
+            get { return jumpOffCurve; }
+        }
+
         public Transform RatPosition
         {
             get { return ratPosition; }
@@ -124,12 +131,14 @@ namespace NeonRattie.Rat
             idle = RatActionStates.Idle,
             jump = RatActionStates.Jump,
             climb = RatActionStates.Climb,
-            walk = RatActionStates.Walk;
+            walk = RatActionStates.Walk,
+            jumpOff = RatActionStates.JumpOff;
 
         protected Idle idling;
         protected Jump jumping;
         protected Climb climbing;
         protected Walk walking;
+        protected JumpOff jumpingOff;
         #endregion
 
         public void ChangeState (RatActionStates state)
@@ -188,6 +197,25 @@ namespace NeonRattie.Rat
             return false; 
         }
 
+        public bool JumpOffValid()
+        {
+            var direction = LocalForward;
+            float length = RatCollider.bounds.extents.z;
+            Vector3 frontPoint = RatCollider.bounds.ClosestPoint(transform.position + direction);
+            Vector3 extendedPoint = frontPoint + length * direction;
+            float height = RatCollider.bounds.extents.y;
+            RaycastHit closest;
+            RaycastHit furtherest;
+            bool close = Physics.Raycast(frontPoint, Vector3.down, out closest);
+            bool far = Physics.Raycast(extendedPoint, Vector3.down, out furtherest);
+            if (!close || !far)
+            {
+                return false;
+            }
+            float difference = (closest.point - furtherest.point).y;
+            return difference > height;
+        }
+
         public bool IsGrounded()
         {
             return GetGroundData(0.1f).transform != null;
@@ -221,7 +249,6 @@ namespace NeonRattie.Rat
         }
 
         
-        
         private void Init()
         {
             RatAnimator = GetComponent<RatAnimator>();
@@ -232,16 +259,19 @@ namespace NeonRattie.Rat
             walking = new Walk();
             jumping = new Jump();
             climbing = new Climb();
+            jumpingOff = new JumpOff();
 
             idling.Init(this, ratStateMachine);
             walking.Init(this, ratStateMachine);
             jumping.Init(this, ratStateMachine);
             climbing.Init(this, ratStateMachine);
+            jumpingOff.Init(this, ratStateMachine);
 
             ratStateMachine.AddState(idle, idling);
             ratStateMachine.AddState(walk, walking);
             ratStateMachine.AddState(jump, jumping);
             ratStateMachine.AddState(climb, climbing);
+            ratStateMachine.AddState(jumpOff, jumpingOff);
             ratStateMachine.ChangeState(idle);
         }
 

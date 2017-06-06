@@ -91,5 +91,18 @@ namespace NeonRattie.Rat.RatStates
         {
             bool fallTowards = rat.TryMove(rat.LowestPoint - Vector3.down * 0.1f);
         }
+        
+        protected Vector3 GetUpValue(float deltaTime, AnimationCurve curve, float height)
+        {
+            Vector3 globalUp = Vector3.up;
+            float ypoint = rat.ClimbUpCurve.Evaluate(deltaTime);
+            return globalUp * ypoint * height;
+        }
+
+        protected Vector3 GetForwardValue(float deltaTime, AnimationCurve curve, Vector3 direction, float distance)
+        {
+            float nextStage = rat.ForwardMotion.Evaluate(deltaTime);
+            return direction * nextStage * distance;
+        }
     }
 }

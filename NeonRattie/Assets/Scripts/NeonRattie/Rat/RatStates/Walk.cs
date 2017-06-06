@@ -26,7 +26,13 @@ namespace NeonRattie.Rat.RatStates
             rat.RotateController.SetLookDirection(rat.WalkDirection, Vector3.up, 0.9f);
             if (rat.ClimbValid())
             {
-                rat.StateMachine.ChangeState(RatActionStates.Climb);
+                rat.ChangeState(RatActionStates.Climb);
+                return;
+            }
+            if (rat.JumpOffValid())
+            {
+                rat.ChangeState(RatActionStates.JumpOff);
+                return;
             }
             FallTowards();
         }

@@ -7,6 +7,7 @@ using UnityEngine;
 
 namespace NeonRattie.Rat.RatStates
 {
+    //TODO: LOTS OF SIMILARITIES WITH JumpOff.cs
     public class Climb : RatState, IActionState
     {
         private readonly float negligibleDistance = 0.1f;

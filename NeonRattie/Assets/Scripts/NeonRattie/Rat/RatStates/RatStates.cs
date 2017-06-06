@@ -6,6 +6,7 @@
         Walk,
         Run,
         Jump,
-        Climb
+        Climb,
+        JumpOff
     }
 }
