@@ -28,26 +28,24 @@ namespace NeonRattie.Rat
         public void SetLookDirection(Vector3 direction, Vector3 upAxis, float rotateSpeed = 1)
         {
             goal = Quaternion.LookRotation(direction, upAxis);
-            transform.rotation = goal;
+            speed = rotateSpeed;
+            isRotating = true;
         }
         
         protected virtual void Rotate()
         {
-            if (!isRotating)
-            {
-                return;
-            }
             Quaternion current = transform.rotation;
             Quaternion next = Quaternion.Slerp(current, goal, slerpTime);
             transform.rotation = next;
             slerpTime += Time.deltaTime * speed;
             Quaternion difference = next.Difference(goal);
-            if (difference.eulerAngles.magnitude > 0.1f)
+            float change = next.eulerAngles.y - goal.eulerAngles.y;
+            Debug.Log("Diffeence: "+change);
+            if (Mathf.Abs(change) < 0.01f)
             {
-                return;
+                slerpTime = 0;
             }
-            transform.rotation = goal;
-            isRotating = false;
+            
         }
 
         protected virtual void Update()
