@@ -19,6 +19,7 @@ namespace NeonRattie.Rat.RatStates
         {
             base.Tick();
             bool noMove = JumpCalculation();
+            rat.Walk(rat.WalkDirection);
             stateTime += Time.deltaTime;
             int length = rat.JumpArc.length;
             bool passed = rat.JumpArc[length - 1].time <= stateTime;
