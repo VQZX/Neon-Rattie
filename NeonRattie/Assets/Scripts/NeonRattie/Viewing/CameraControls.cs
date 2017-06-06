@@ -69,8 +69,7 @@ namespace NeonRattie.Viewing
 
         protected void FreeControl()
         {
-            AlignWithRat();
-            SlowLookAtRat();
+            transform.position = Vector3.Lerp(transform.position, SumMotion(), Time.deltaTime * followData.PitchRotation);
             MouseManager mm;
             if (!MouseManager.TryGetInstance(out mm))
             {
@@ -116,32 +115,41 @@ namespace NeonRattie.Viewing
             return Math.Abs(heightDifference) < freeControl.DownMovement;
         }
 
-
-        private void CorrectHeightFromGround()
+        private Vector3 SumMotion()
         {
-            Vector3 pos = transform.position;
+            Vector3 sum = CorrectHeightFromGround(transform.position);
+            sum = AlignWithRat(sum);
+            sum = SlowLookAtRat(sum);
+            return sum;
+        }
+        
+
+
+        private Vector3 CorrectHeightFromGround(Vector3 pos)
+        {
             Vector3 ratPos = rat.RatPosition.transform.position;
             pos.y = ratPos.y + followData.HeightAboveAgent;
-            transform.position = Vector3.Lerp(transform.position, pos, Time.deltaTime * followData.PitchRotation);
+            return pos;
         }
 
-        private void AlignWithRat()
+        private Vector3 AlignWithRat(Vector3 pos)
         {
-            CorrectHeightFromGround();
+            //CorrectHeightFromGround();
             Ray lookingRay = new Ray(rat.RatPosition.position, -initDirectionToRat);
             Ray ratRay = new Ray(rat.RatPosition.position, -rat.LocalForward);
             Vector3 look = lookingRay.GetPoint(followData.DistanceFromPlayer);
             Vector3 ratLook = ratRay.GetPoint(followData.DistanceFromPlayer);
             var avg = new Vector3(ratLook.x, look.y, ratLook.z);
-            Vector3 current = transform.position;
-            transform.position = Vector3.Lerp(current, avg, Time.deltaTime * 10);
+            Vector3 current = pos;
+            return Vector3.Lerp(current, avg, Time.deltaTime * 10);
         }
 
-        private void SlowLookAtRat ()
+        private Vector3 SlowLookAtRat (Vector3 pos)
         {
             Vector3 idealPlayerPosition = CalculatePositionByRotation(transform.rotation);
             Vector3 difference = (rat.transform.position - idealPlayerPosition);
-            transform.position += difference;
+            pos += difference;
+            return pos;
         }
 
         private Vector3 CalculatePositionByRotation(Quaternion rotation)
