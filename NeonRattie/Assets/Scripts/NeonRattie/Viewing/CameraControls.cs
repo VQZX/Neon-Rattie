@@ -26,7 +26,7 @@ namespace NeonRattie.Viewing
         [SerializeField]
         protected LayerMask groundLayer;
 
-        [SerializeField] protected float slerpTimeModifier = 0.1f;
+        [SerializeField] protected float slerpAmount = 0.5f;
 
         private Vector3 initDirectionToRat;
 
@@ -64,38 +64,13 @@ namespace NeonRattie.Viewing
 
         protected virtual void LateUpdate()
         {
-            var currentState = rat.StateMachine.CurrentState;
-            if (currentState is Idle)
-            {
-                FreeControl();
-            }
-            else if ( currentState is IActionState)
-            {
-                Follow();
-            }
-            else
-            {
-                Debug.LogWarning("[CAMERA CONTROLS] RAT IS NOT A STATE FOR THE CAMERA TO DO ANYTHING");
-            }
-        }
-
-        protected void Follow()
-        {
-            if (delayCollider.IsInside(rat.RatPosition.transform) )
-            {
-                return;
-            }
-            //TODO: add acceleration to prevent snapping
-            AlignWithRat();
-            LookAt();
-            idleForward = transform.forward;
+            FreeControl();
         }
 
         protected void FreeControl()
         {
-            //AlignWithRat();
-            //transform.LookAt(rat.RatPosition);
-            slerpTime = 0;
+            AlignWithRat();
+            SlowLookAtRat();
             MouseManager mm;
             if (!MouseManager.TryGetInstance(out mm))
             {
@@ -122,11 +97,11 @@ namespace NeonRattie.Viewing
                     return;
                 }
             }
-            transform.rotation *= Quaternion.AngleAxis(freeControl.RotationSpeed * delta.magnitude, axis);
-            Vector3 currentRot = transform.rotation.eulerAngles;
+            Quaternion nextRot = transform.rotation * Quaternion.AngleAxis(freeControl.RotationSpeed * delta.magnitude, axis);
+            Vector3 currentRot = nextRot.eulerAngles;
             currentRot.z = originalRot.z;
-            transform.rotation = new Quaternion {eulerAngles = currentRot};
-            SlowLookAtRat();
+            Quaternion next = new Quaternion {eulerAngles = currentRot};
+            transform.rotation = Quaternion.Slerp(transform.rotation, next, slerpAmount);
         }
 
         private bool VerticalValid(Quaternion rotation)
@@ -159,7 +134,7 @@ namespace NeonRattie.Viewing
             Vector3 ratLook = ratRay.GetPoint(followData.DistanceFromPlayer);
             var avg = new Vector3(ratLook.x, look.y, ratLook.z);
             Vector3 current = transform.position;
-            transform.position = Vector3.Lerp(current, avg, Time.deltaTime * followData.PitchRotation * 25);
+            transform.position = Vector3.Lerp(current, avg, Time.deltaTime * 10);
         }
 
         private void SlowLookAtRat ()
@@ -167,15 +142,6 @@ namespace NeonRattie.Viewing
             Vector3 idealPlayerPosition = CalculatePositionByRotation(transform.rotation);
             Vector3 difference = (rat.transform.position - idealPlayerPosition);
             transform.position += difference;
-        }
-
-        private void LookAt()
-        {
-            slerpTime += Time.deltaTime * slerpTimeModifier;
-            Vector3 direction = (rat.RatPosition.position - transform.position).normalized;
-            Quaternion current = transform.rotation;
-            Quaternion next = Quaternion.LookRotation(direction);
-            transform.rotation = Quaternion.Slerp(current, next, slerpTime);
         }
 
         private Vector3 CalculatePositionByRotation(Quaternion rotation)

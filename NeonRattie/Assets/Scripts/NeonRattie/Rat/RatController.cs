@@ -201,7 +201,7 @@ namespace NeonRattie.Rat
                 return;
             }
             NavAgent.SetDestination(transform.position + direction * walkSpeed);
-        }
+        }    
 
 
         public RaycastHit GetGroundData (float distance = 10000)

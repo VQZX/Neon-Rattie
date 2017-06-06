@@ -40,7 +40,6 @@ namespace NeonRattie.Rat
             slerpTime += Time.deltaTime * speed;
             Quaternion difference = next.Difference(goal);
             float change = next.eulerAngles.y - goal.eulerAngles.y;
-            Debug.Log("Diffeence: "+change);
             if (Mathf.Abs(change) < 0.01f)
             {
                 slerpTime = 0;
