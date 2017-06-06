@@ -18,9 +18,7 @@ namespace NeonRattie.Rat.RatStates
         private Vector3 flatDirection;
         private Vector4 goal;
 
-        private float slerpTime;
-
-        private Queue<Vector3> arcPositions = new Queue<Vector3>(100);
+        private readonly Queue<Vector3> arcPositions = new Queue<Vector3>(100);
         private Vector3[] drawPositions;
         
         public override void Enter(IState previousState)
@@ -39,13 +37,15 @@ namespace NeonRattie.Rat.RatStates
             {
                 forwardPoint = hit.point;
                 flatDirection = (forwardPoint - initialPoint).normalized;
-                height = Mathf.Abs((forwardPoint.y + size)  - rat.transform.position.y);
-                goal = forwardPoint + Vector3.up * height;
+                height = Mathf.Abs(forwardPoint.y  - initialPoint.y);
+                goal = forwardPoint;
             }
             else
             {
                 rat.StateMachine.ChangeState(previousState);
+                return;
             }
+            CalculatePositions();
             rat.AddDrawGizmos(DrawGizmos);
         }
 
@@ -63,7 +63,6 @@ namespace NeonRattie.Rat.RatStates
         public override void Exit(IState state)
         {
             base.Exit(state);
-            
         }
         
         private void CalculatePositions()
@@ -72,11 +71,13 @@ namespace NeonRattie.Rat.RatStates
             var upCurve = rat.JumpOffCurve.VerticalMotion;
             var forwardCurve = rat.JumpOffCurve.ForwardMotion;
             float maxtime = Mathf.Min(forwardCurve.GetFinalTime(), upCurve.GetFinalTime());
+            float slerpTime = 0;
             while (!reachedTarget)
             {
                 var upValue = GetUpValue(slerpTime, upCurve, height);
                 var forwardValue = GetForwardValue(slerpTime, forwardCurve, flatDirection, distance);
                 var nextPoint = initialPoint + (upValue + forwardValue);
+                Debug.Log(nextPoint);
                 arcPositions.Enqueue(nextPoint);
                 slerpTime += Time.deltaTime;
                 var difference = Vector3.Distance(nextPoint, forwardPoint);
