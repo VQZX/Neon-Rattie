@@ -1,6 +1,9 @@
 ﻿using System;
+using Flusk.Controls;
+using Flusk.Extensions;
 using Flusk.Management;
 using NeonRattie.Controls;
+using NeonRattie.Management;
 using NeonRattie.Objects;
 using NeonRattie.Rat.RatStates;
 using NeonRattie.Shared;
@@ -36,6 +39,10 @@ namespace NeonRattie.Rat
 
         [SerializeField]
         protected LayerMask jumpLayer;
+
+        [SerializeField] protected float rotationAngleMultiplier = 1;
+        [SerializeField] protected RotateController rotateController;
+        public RotateController RotateController {get { return rotateController; }}
 
         
         //climbing data
@@ -77,12 +84,12 @@ namespace NeonRattie.Rat
         //TODO: right editor script so these can be configurable!
         public Vector3 ForwardDirection
         {
-            get { return (-Vector3.right).normalized; }
+            get { return (Vector3.forward); }
         }
 
         public Vector3 LocalForward
         {
-            get { return (-transform.right).normalized; }
+            get { return (transform.forward); }
         }
 
         public Bounds Bounds
@@ -93,6 +100,8 @@ namespace NeonRattie.Rat
         public Collider RatCollider { get; private set; }
 
         public event Action DrawGizmos;
+        
+        public Vector3 WalkDirection { get; private set; }
 
 
 #if UNITY_EDITOR
@@ -154,18 +163,19 @@ namespace NeonRattie.Rat
 
         public bool TryMove(Vector3 position, LayerMask? surface)
         {
-            if ( surface == null )
+            if (surface == null)
             {
                 surface = LayerMask.NameToLayer("Everything");
             }
             Vector3 point = RatCollider.bounds.ClosestPoint(position);
             float distance = (position - point).magnitude;
             Vector3 direction = (position - point).normalized;
-            Ray ray = new Ray(point, direction);        
+            Ray ray = new Ray(point, direction);
             Debug.DrawRay(point, direction, Color.red);
             RaycastHit hit;
             bool success = Physics.Raycast(ray, out hit, distance, surface.Value);
-            Collider[] hits = Physics.OverlapBox(position, RatCollider.bounds.extents, transform.rotation, surface.Value);
+            Collider[] hits = Physics.OverlapBox(position, RatCollider.bounds.extents, transform.rotation,
+                surface.Value);
             success = hits.Length == 0;
             if (success)
             {
@@ -195,6 +205,16 @@ namespace NeonRattie.Rat
         public bool IsGrounded()
         {
             return GetGroundData(0.1f).transform != null;
+        }
+        
+        public void Walk(Vector3 direction)
+        {
+            if (NavAgent == null)
+            {
+                transform.Translate(direction * walkSpeed * Time.deltaTime, Space.World);
+                return;
+            }
+            NavAgent.SetDestination(transform.position + direction * walkSpeed);
         }
 
         public void WalkForward (Vector3 forward)
@@ -233,15 +253,7 @@ namespace NeonRattie.Rat
             RatCollider = GetComponent<Collider>();
         }
 
-        private void Walk(Vector3 direction)
-        {
-            if (NavAgent == null)
-            {
-                transform.Translate(direction * walkSpeed * Time.deltaTime, Space.Self);
-                return;
-            }
-            NavAgent.SetDestination(transform.position + direction * walkSpeed);
-        }
+        
         
         private void Init()
         {
@@ -276,7 +288,7 @@ namespace NeonRattie.Rat
         /// <param name="axis"></param>
         public virtual void RotateRat(float angle, Vector3 axis)
         {
-            transform.RotateAround(transform.position, axis, angle);
+            transform.RotateAround(transform.position, axis, angle * rotationAngleMultiplier);
         }
 
         public virtual void RotateRat(float angle)
@@ -324,11 +336,13 @@ namespace NeonRattie.Rat
         protected virtual void OnEnable()
         {
             MainPrefab.ManagementLoaded += OnManagementLoaded;
+            PlayerControls.Instance.Walk += OnWalk;
         }
 
         protected virtual void OnDisable()
         {
             MainPrefab.ManagementLoaded -= OnManagementLoaded;
+            PlayerControls.Instance.Walk -= OnWalk;
         }
 
         protected virtual void LateUpdate()
@@ -358,6 +372,24 @@ namespace NeonRattie.Rat
         {
             Vector3 point = transform.position - Vector3.down * 10;
             LowestPoint = Bounds.ClosestPoint(point);
+        }
+
+        private void OnWalk(float axis)
+        {
+            KeyboardControls keyboard;
+            PlayerControls player;
+            if (!KeyboardControls.TryGetInstance(out keyboard) || !PlayerControls.TryGetInstance(out player))
+            {
+                return;
+            }
+            Vector3 forward = SceneObjects.Instance.CameraControls.GetFlatForward();
+            Vector3 right = SceneObjects.Instance.CameraControls.GetFlatRight();
+            WalkDirection = Vector3.zero;
+            WalkDirection += keyboard.CheckKey(player.Forward) ? forward : Vector3.zero;
+            WalkDirection += keyboard.CheckKey(player.Back) ? -forward : Vector3.zero;
+            WalkDirection += keyboard.CheckKey(player.Right) ? right : Vector3.zero;
+            WalkDirection += keyboard.CheckKey(player.Left) ? -right : Vector3.zero;
+            WalkDirection.Normalize();
         }
     }
 }

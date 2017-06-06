@@ -10,6 +10,11 @@ namespace Flusk.Controls
 
         public event Action<KeyData> KeyHit;
 
+        public bool CheckKey(KeyCode code)
+        {
+            return Input.GetKey(code);
+        }
+        
         protected virtual void Start()
         {
             var count = codes.Length;

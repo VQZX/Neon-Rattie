@@ -10,7 +10,6 @@ namespace NeonRattie.Rat.RatStates
         {
             base.Enter(previousState);
             rat.RatAnimator.PlayReverse();
-            PlayerControls.Instance.UnReverse += UnReverse;
         }
 
         public override void Tick()
@@ -26,7 +25,6 @@ namespace NeonRattie.Rat.RatStates
         {
             base.Exit(state);
             rat.RatAnimator.ExitWalk();
-            PlayerControls.Instance.UnReverse -= UnReverse;
         }
 
         private void UnReverse(float x)

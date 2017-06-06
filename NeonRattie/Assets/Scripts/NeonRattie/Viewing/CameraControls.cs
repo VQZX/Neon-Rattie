@@ -38,6 +38,20 @@ namespace NeonRattie.Viewing
 
         protected float slerpTime;
 
+        public Vector3 GetFlatRight ()
+        {
+            Vector3 right = transform.right;
+            right.y = 0;
+            return right;
+        }
+
+        public Vector3 GetFlatForward()
+        {
+            Vector3 forward = transform.forward;
+            forward.y = 0;
+            return forward;
+        }
+
         protected virtual void Start()
         {
             if (rat == null)

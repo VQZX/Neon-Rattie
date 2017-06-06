@@ -1,5 +1,7 @@
-﻿using Flusk.Utility;
+﻿using System;
+using Flusk.Utility;
 using NeonRattie.Controls;
+using UnityEngine;
 
 namespace NeonRattie.Rat.RatStates
 {
@@ -16,9 +18,12 @@ namespace NeonRattie.Rat.RatStates
         public override void Tick()
         {
             base.Tick();
-            rat.TankControls();
-            rat.WalkForward();
-            RatRotate();
+            if (Math.Abs(rat.WalkDirection.magnitude) < 0.001f)
+            {
+                rat.ChangeState(RatActionStates.Idle);
+            }
+            rat.Walk(rat.WalkDirection);
+            rat.RotateController.SetLookDirection(rat.WalkDirection, Vector3.up);
             if (rat.ClimbValid())
             {
                 rat.StateMachine.ChangeState(RatActionStates.Climb);

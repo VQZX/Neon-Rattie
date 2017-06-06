@@ -19,14 +19,12 @@ namespace NeonRattie.Rat.RatStates
             base.Enter(previousState);
             rat.RatAnimator.PlayIdle();
             PlayerControls.Instance.Walk += OnWalkPressed;
-            PlayerControls.Instance.Reverse += OnReversePressed;
             PlayerControls.Instance.Jump += OnJump;
         }
 
         public override void Tick()
         {
             base.Tick();
-            rat.TankControls();
             FallTowards();
             RatRotate();
             
@@ -65,7 +63,6 @@ namespace NeonRattie.Rat.RatStates
         public override void Exit(IState previousState)
         {
             PlayerControls.Instance.Walk -= OnWalkPressed;
-            PlayerControls.Instance.Reverse -= OnReversePressed;
             PlayerControls.Instance.Jump -= OnJump;
 
         }
@@ -76,11 +73,6 @@ namespace NeonRattie.Rat.RatStates
             {
                 StateMachine.ChangeState(RatActionStates.Walk);
             }
-        }
-
-        private void OnReversePressed(float axis)
-        {
-            StateMachine.ChangeState(RatActionStates.Reverse);
         }
     }
 }
