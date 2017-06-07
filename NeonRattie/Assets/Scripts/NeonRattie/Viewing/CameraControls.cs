@@ -2,7 +2,6 @@
 using Flusk.Management;
 using NeonRattie.Controls;
 using NeonRattie.Rat;
-using NeonRattie.Rat.RatStates;
 using UnityEngine;
 
 namespace NeonRattie.Viewing
@@ -87,7 +86,7 @@ namespace NeonRattie.Viewing
             //never do them at the same time!
             Vector3 axis;
             axis = Mathf.Abs(delta.y) < Mathf.Abs(delta.x) ? new Vector3(0, delta.x) : new Vector3(-delta.y, 0);
-            if (axis.y == 0)
+            if (Math.Abs(axis.y) < 0.001f)
             {
                 Quaternion rot = transform.rotation;
                 rot *= Quaternion.AngleAxis(freeControl.RotationSpeed * delta.magnitude, axis);

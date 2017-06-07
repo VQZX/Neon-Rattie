@@ -11,7 +11,7 @@ namespace NeonRattie.Controls
             set { points[index] = value; }
         }
 
-        private List<Vector3> points;
+        private readonly List<Vector3> points;
 
         public int CurrentIndex { get; private set; }
         public bool CurrentIndexValid

@@ -1,5 +1,4 @@
 ﻿using Assets.Scripts.Flusk.Utility;
-using Flusk.Controls;
 using Flusk.Management;
 using Flusk.Utility;
 using NeonRattie.Controls;
@@ -11,7 +10,7 @@ namespace NeonRattie.Rat.RatStates
     {
 
         public bool hasMovedMouse = false;
-        private float resetTime = 10;
+        private const float RESET_TIME = 10;
         private Timer searchTime;
 
         public override void Enter(IState previousState)
@@ -29,7 +28,6 @@ namespace NeonRattie.Rat.RatStates
             RatRotate();
             
             var playerControls = PlayerControls.Instance;
-            var keyboardControls = KeyboardControls.Instance;
 
             if (playerControls.CheckKey(playerControls.Forward))
             {
@@ -46,14 +44,28 @@ namespace NeonRattie.Rat.RatStates
             {
                 return;
             }
-            rat.RatAnimator.PlaySearchingIdle();
-            searchTime = new Timer(resetTime, UndoSearch);
+            StartSearch();
+            if (searchTime != null)
+            {
+                searchTime.Tick(Time.deltaTime);
+            }
+            
         }
 
         private void UndoSearch ()
         {
             searchTime = null;
             rat.RatAnimator.PlayIdle();
+        }
+
+        private void StartSearch()
+        {
+            if (searchTime != null)
+            {
+                return;
+            }
+            rat.RatAnimator.PlaySearchingIdle();
+            searchTime = new Timer(RESET_TIME, UndoSearch);
         }
 
         public override void Exit(IState previousState)

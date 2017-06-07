@@ -1,7 +1,7 @@
 ﻿using System;
-using System.ComponentModel;
 using Flusk.Controls;
 using Flusk.Patterns;
+using JetBrains.Annotations;
 using UnityEngine;
 
 namespace NeonRattie.Controls
@@ -84,7 +84,7 @@ namespace NeonRattie.Controls
 
         protected virtual void OnDisable()
         {
-            var kc = (KeyboardControls.Instance as KeyboardControls);
+            var kc = KeyboardControls.Instance;
             if (kc == null)
             {
                 return;
@@ -147,6 +147,7 @@ namespace NeonRattie.Controls
             Invoke(Jump, data.AxisValue);
         }
 
+        [UsedImplicitly]
         private void InvokePause(KeyData data)
         {
             if (pauseKey != data.Code)
@@ -156,6 +157,7 @@ namespace NeonRattie.Controls
             Invoke(Pause);
         }
 
+        [UsedImplicitly]
         private void InvokeExit(KeyData data)
         {
             if (exitKey != data.Code)
@@ -166,7 +168,7 @@ namespace NeonRattie.Controls
         }
         
 
-        private bool Contains(KeyCode code, KeyCode[] codes)
+        private static bool Contains(KeyCode code, KeyCode[] codes)
         {
             int length = codes.Length;
             for (int i = 0; i < length; i++)

@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using Flusk.Extensions;
 using Flusk.Utility;
@@ -69,10 +68,10 @@ namespace NeonRattie.Rat.RatStates
         
         private void CalculatePositions()
         {
-            bool reachedTarget = false;
+            var reachedTarget = false;
             var upCurve = rat.JumpOffCurve.VerticalMotion;
             var forwardCurve = rat.JumpOffCurve.ForwardMotion;
-            float maxtime = Mathf.Min(forwardCurve.GetFinalTime(), upCurve.GetFinalTime());
+            var maxtime = Mathf.Min(forwardCurve.GetFinalTime(), upCurve.GetFinalTime());
             float slerpTime = 0;
             while (!reachedTarget)
             {

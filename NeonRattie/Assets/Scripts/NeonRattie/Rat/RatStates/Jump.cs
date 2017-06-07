@@ -5,7 +5,7 @@ namespace NeonRattie.Rat.RatStates
 {
     public class Jump : RatState, IActionState
     {
-        private float stateTime = 0;
+        private float stateTime;
 
         public override void Enter(IState previousState)
         {
@@ -18,7 +18,7 @@ namespace NeonRattie.Rat.RatStates
         public override void Tick()
         {
             base.Tick();
-            bool noMove = JumpCalculation();
+            JumpCalculation();
             rat.Walk(rat.WalkDirection);
             stateTime += Time.deltaTime;
             int length = rat.JumpArc.length;
@@ -29,11 +29,11 @@ namespace NeonRattie.Rat.RatStates
             }
         }
 
-        private bool JumpCalculation()
+        private void JumpCalculation()
         {
             float jumpMultiplier = rat.JumpArc.Evaluate(stateTime);
             Vector3 force = (rat.JumpForce * -rat.Gravity.normalized * jumpMultiplier);
-            return rat.TryMove(rat.GetGroundData().point + force);
+            rat.TryMove(rat.GetGroundData().point + force);
         }
     }
 }

@@ -1,6 +1,4 @@
 ﻿using System;
-using Flusk.Structures;
-using UnityEngine;
 
 namespace NeonRattie.Viewing
 {

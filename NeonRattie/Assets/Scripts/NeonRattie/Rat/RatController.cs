@@ -1,6 +1,5 @@
 ﻿using System;
 using Flusk.Controls;
-using Flusk.Extensions;
 using Flusk.Management;
 using NeonRattie.Controls;
 using NeonRattie.Management;
@@ -26,7 +25,7 @@ namespace NeonRattie.Rat
         public float JumpForce { get { return jumpForce; } }
         [SerializeField] protected AnimationCurve jumpArc;
         public AnimationCurve JumpArc { get { return jumpArc; } }
-        [SerializeField] protected AnimationCurve JumpAnimationCurve;
+        [SerializeField] protected AnimationCurve jumpAnimationCurve;
 
         [SerializeField] protected float mass = 1;
         public float Mass { get { return mass; } }
@@ -116,7 +115,7 @@ namespace NeonRattie.Rat
 #endif
 
         #region State stuff
-        private RatStateMachine ratStateMachine = new RatStateMachine();
+        private readonly RatStateMachine ratStateMachine = new RatStateMachine();
 
         public RatStateMachine StateMachine
         {
@@ -124,7 +123,7 @@ namespace NeonRattie.Rat
         }
 
         [ReadOnly, SerializeField]
-        protected string RatState;
+        protected string ratState;
 
         //states and keys
         protected RatActionStates
@@ -161,17 +160,11 @@ namespace NeonRattie.Rat
             if (surface == null)
             {
                 surface = LayerMask.NameToLayer("Everything");
+                return TryMove(position, surface);
             }
-            Vector3 point = RatCollider.bounds.ClosestPoint(position);
-            float distance = (position - point).magnitude;
-            Vector3 direction = (position - point).normalized;
-            Ray ray = new Ray(point, direction);
-            Debug.DrawRay(point, direction, Color.red);
-            RaycastHit hit;
-            bool success = Physics.Raycast(ray, out hit, distance, surface.Value);
-            Collider[] hits = Physics.OverlapBox(position, RatCollider.bounds.extents, transform.rotation,
+            var hits = Physics.OverlapBox(position, RatCollider.bounds.extents, transform.rotation,
                 surface.Value);
-            success = hits.Length == 0;
+            var success = hits.Length == 0;
             if (success)
             {
                 transform.position = position;
@@ -241,7 +234,7 @@ namespace NeonRattie.Rat
         public RaycastHit GetGroundData (float distance = 10000)
         {
             RaycastHit info;
-            bool hit = Physics.Raycast(transform.position, -transform.up, out info, distance, groundLayer);
+            Physics.Raycast(transform.position, -transform.up, out info, distance, groundLayer);
             return info;
         }
 
@@ -250,7 +243,6 @@ namespace NeonRattie.Rat
             SceneManagement.Instance.Rat = this;
             NavAgent = GetComponentInChildren<NavMeshAgent>();
             Init();
-            offsetRotation = new Vector3(-1, 0, 1);
             RatCollider = GetComponent<Collider>();
         }
 
@@ -298,12 +290,10 @@ namespace NeonRattie.Rat
 
         public override void Destroy()
         {
-            throw new System.NotImplementedException();
         }
 
         public override void Initialise()
         {
-            throw new System.NotImplementedException();
         }
 
         public void AddDrawGizmos (Action action)
@@ -325,11 +315,11 @@ namespace NeonRattie.Rat
             ClimbValid();
             if  (JumpBox != null )
             {
-                JumpBox.Select(true);
+                JumpBox.Select();
             }
 #if UNITY_EDITOR
             forwardDirection = ForwardDirection;
-            RatState = ratStateMachine.CurrentState.ToString();
+            ratState = ratStateMachine.CurrentState.ToString();
 #endif
         }
         

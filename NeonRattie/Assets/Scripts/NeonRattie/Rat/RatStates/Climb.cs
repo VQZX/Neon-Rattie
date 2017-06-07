@@ -14,7 +14,6 @@ namespace NeonRattie.Rat.RatStates
         
         private Curve curve;
         private CurveMotion<RatController> curveMotion;
-        private float maxRayLength = 10;
         private float slerpTime;
         private JumpBox jumpBox;
         private Vector3 goal;
