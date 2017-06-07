@@ -13,10 +13,14 @@ namespace NeonRattie.Rat
     /// as well as playing animations through triggers, bools
     /// and directly through names
     /// </summary>
-    [RequireComponent(typeof (Animator))]
     public class RatAnimator : MonoBehaviour
     {
-        public Animator Animator { get; private set; }
+        [SerializeField] protected Animator animator;
+
+        public Animator Animator
+        {
+            get { return animator; }
+        }
 
         public void PlayIdle()
         {
@@ -53,11 +57,6 @@ namespace NeonRattie.Rat
         public void PlayReverse()
         {
             //Debug.Log("Reverse");
-        }
-
-        protected virtual void Awake()
-        {
-            Animator = GetComponent<Animator>();
         }
     }
 }

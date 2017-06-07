@@ -10,7 +10,7 @@ namespace NeonRattie.Rat.RatStates
     public class JumpOff : RatState, IActionState
     {
         private const int RAT_LENGTHS_AHEAD = 3;
-        private const float NEGLIGIBLE_DISTANCE = 0.01f;
+        private const float NEGLIGIBLE_DISTANCE = 0.0000001f;
         private Vector3 forwardPoint;
         private float distance;
         private float height;
@@ -35,9 +35,10 @@ namespace NeonRattie.Rat.RatStates
             initialPoint = rat.transform.position;
             if (Physics.Raycast(ray, out hit))
             {
-                forwardPoint = hit.point;
+                forwardPoint = hit.point + Vector3.up * size;
                 flatDirection = (forwardPoint - initialPoint).normalized;
-                height = Mathf.Abs(forwardPoint.y  - initialPoint.y);
+                flatDirection.y = 0;
+                height = Mathf.Abs(forwardPoint.y - initialPoint.y);
                 goal = forwardPoint;
             }
             else
@@ -53,7 +54,7 @@ namespace NeonRattie.Rat.RatStates
         {
             base.Tick();
             rat.Move(arcPositions.Dequeue());
-            if (arcPositions.Count > 0)
+            if (arcPositions.Count > 0 )
             {
                 return;
             }
@@ -63,6 +64,7 @@ namespace NeonRattie.Rat.RatStates
         public override void Exit(IState state)
         {
             base.Exit(state);
+            rat.NullifyJumpBox();
         }
         
         private void CalculatePositions()
@@ -77,19 +79,19 @@ namespace NeonRattie.Rat.RatStates
                 var upValue = GetUpValue(slerpTime, upCurve, height);
                 var forwardValue = GetForwardValue(slerpTime, forwardCurve, flatDirection, distance);
                 var nextPoint = initialPoint + (upValue + forwardValue);
-                Debug.Log(nextPoint);
                 arcPositions.Enqueue(nextPoint);
                 slerpTime += Time.deltaTime;
                 var difference = Vector3.Distance(nextPoint, forwardPoint);
                 reachedTarget = difference < NEGLIGIBLE_DISTANCE || (maxtime > 0 && slerpTime > maxtime);
             }
-            arcPositions.Enqueue(goal);
+            //arcPositions.Enqueue(goal);
             drawPositions = arcPositions.ToArray();
         }
         
         private void DrawGizmos ()
         {
             int capacity = drawPositions.Length;
+            Gizmos.DrawSphere(goal, 0.3f);
             for (int i = 0; i < capacity; i++)
             {
                 Gizmos.DrawSphere(drawPositions[i], 0.1f);

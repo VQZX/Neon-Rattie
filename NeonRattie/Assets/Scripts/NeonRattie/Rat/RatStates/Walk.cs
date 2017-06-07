@@ -18,6 +18,7 @@ namespace NeonRattie.Rat.RatStates
         public override void Tick()
         {
             base.Tick();
+            FallTowards();
             if (Math.Abs(rat.WalkDirection.magnitude) < 0.001f)
             {
                 rat.ChangeState(RatActionStates.Idle);
@@ -32,9 +33,8 @@ namespace NeonRattie.Rat.RatStates
             if (rat.JumpOffValid())
             {
                 rat.ChangeState(RatActionStates.JumpOff);
-                return;
             }
-            FallTowards();
+            
         }
 
         public override void Exit (IState nextState)

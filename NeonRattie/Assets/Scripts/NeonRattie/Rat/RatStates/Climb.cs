@@ -62,7 +62,6 @@ namespace NeonRattie.Rat.RatStates
             rat.RemoveDrawGizmos(DrawGizmos);
         }
 
-
         private void DrawGizmos ()
         {
             int capacity = drawPositions.Length;

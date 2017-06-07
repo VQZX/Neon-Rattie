@@ -197,11 +197,17 @@ namespace NeonRattie.Rat
             return false; 
         }
 
+        //TODO: make this process more secure/elegant, some event or something   
+        public void NullifyJumpBox()
+        {
+            JumpBox = null;
+        }
+
         public bool JumpOffValid()
         {
             var direction = LocalForward;
-            float length = RatCollider.bounds.extents.z;
-            Vector3 frontPoint = RatCollider.bounds.ClosestPoint(transform.position + direction);
+            float length = RatCollider.bounds.extents.z * 0.3f;
+            Vector3 frontPoint = RatCollider.bounds.ClosestPoint(transform.position + direction) + direction * 0.1f;
             Vector3 extendedPoint = frontPoint + length * direction;
             float height = RatCollider.bounds.extents.y;
             RaycastHit closest;
