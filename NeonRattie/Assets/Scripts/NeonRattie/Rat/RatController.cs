@@ -121,10 +121,10 @@ namespace NeonRattie.Rat
         {
             get { return ratStateMachine; }
         }
-
+#if UNITY_EDITOR
         [ReadOnly, SerializeField]
         protected string ratState;
-
+#endif
         //states and keys
         protected RatActionStates
             idle = RatActionStates.Idle,
