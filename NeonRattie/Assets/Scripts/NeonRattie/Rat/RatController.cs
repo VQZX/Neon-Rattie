@@ -159,7 +159,7 @@ namespace NeonRattie.Rat
         {
             if (surface == null)
             {
-                surface = LayerMask.NameToLayer("Everything");
+                surface = LayerMask.NameToLayer("Default");
                 return TryMove(position, surface);
             }
             var hits = Physics.OverlapBox(position, RatCollider.bounds.extents, transform.rotation,
@@ -224,7 +224,8 @@ namespace NeonRattie.Rat
         {
             if (NavAgent == null)
             {
-                transform.Translate(direction * walkSpeed * Time.deltaTime, Space.World);
+                Vector3 translate = transform.position + direction * walkSpeed * Time.deltaTime;
+                TryMove(translate);
                 return;
             }
             NavAgent.SetDestination(transform.position + direction * walkSpeed);

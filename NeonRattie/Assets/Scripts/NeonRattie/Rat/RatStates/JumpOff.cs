@@ -52,7 +52,10 @@ namespace NeonRattie.Rat.RatStates
         public override void Tick()
         {
             base.Tick();
-            rat.TryMove(arcPositions.Dequeue());
+            if (!rat.TryMove(arcPositions.Dequeue()))
+            {
+                rat.ChangeState(RatActionStates.Idle);
+            }
             if (arcPositions.Count > 0 )
             {
                 return;
