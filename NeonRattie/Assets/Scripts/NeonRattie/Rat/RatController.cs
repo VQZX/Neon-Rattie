@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net.NetworkInformation;
 using Flusk.Controls;
 using Flusk.Management;
 using NeonRattie.Controls;
@@ -33,6 +34,13 @@ namespace NeonRattie.Rat
         [SerializeField] protected float rotateAmount = 300;
 
         [SerializeField] protected Transform ratPosition;
+
+        [SerializeField] protected LayerMask collisionMask;
+
+        public LayerMask CollisionMask
+        {
+            get { return collisionMask; }
+        }
 
         [SerializeField]
         protected LayerMask groundLayer;
@@ -145,25 +153,19 @@ namespace NeonRattie.Rat
             StateMachine.ChangeState(state);
         }
 
-        public void Move(Vector3 position)
-        {
-            transform.position = position;
-        }
-
         public bool TryMove (Vector3 position)
         {
             return TryMove(position, groundLayer);
         }
 
-        public bool TryMove(Vector3 position, LayerMask? surface)
+        public bool TryMove(Vector3 position, LayerMask surface)
         {
-            if (surface == null)
+            var hits = Physics.OverlapBox(position, RatCollider.bounds.extents * 0.5f, transform.rotation,
+                surface);
+            for (int i = 0; i < hits.Length; i++)
             {
-                surface = LayerMask.NameToLayer("Default");
-                return TryMove(position, surface);
+                Debug.Log(hits[i]);
             }
-            var hits = Physics.OverlapBox(position, RatCollider.bounds.extents, transform.rotation,
-                surface.Value);
             var success = hits.Length == 0;
             if (success)
             {
@@ -225,7 +227,7 @@ namespace NeonRattie.Rat
             if (NavAgent == null)
             {
                 Vector3 translate = transform.position + direction * walkSpeed * Time.deltaTime;
-                TryMove(translate);
+                TryMove(translate, collisionMask);
                 return;
             }
             NavAgent.SetDestination(transform.position + direction * walkSpeed);

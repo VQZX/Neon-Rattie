@@ -18,13 +18,13 @@ namespace NeonRattie.Rat.RatStates
         public override void Tick()
         {
             base.Tick();
-            FallTowards();
             if (Math.Abs(rat.WalkDirection.magnitude) < 0.001f)
             {
                 rat.ChangeState(RatActionStates.Idle);
             }
             rat.Walk(rat.WalkDirection);
             rat.RotateController.SetLookDirection(rat.WalkDirection, Vector3.up, 0.9f);
+            FallTowards();
             if (rat.ClimbValid())
             {
                 rat.ChangeState(RatActionStates.Climb);
