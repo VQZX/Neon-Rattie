@@ -37,6 +37,9 @@ namespace NeonRattie.Rat
 
         [SerializeField] protected LayerMask collisionMask;
 
+        [SerializeField]
+        protected MoveHelperState moveHelperState;
+
         public LayerMask CollisionMask
         {
             get { return collisionMask; }
