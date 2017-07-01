@@ -84,8 +84,7 @@ namespace NeonRattie.Viewing
 
             Vector2 delta = mm.Delta;
             //never do them at the same time!
-            Vector3 axis;
-            axis = Mathf.Abs(delta.y) < Mathf.Abs(delta.x) ? new Vector3(0, delta.x) : new Vector3(-delta.y, 0);
+            var axis = Mathf.Abs(delta.y) < Mathf.Abs(delta.x) ? new Vector3(0, delta.x) : new Vector3(-delta.y, 0);
             if (Math.Abs(axis.y) < 0.001f)
             {
                 Quaternion rot = transform.rotation;

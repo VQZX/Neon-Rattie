@@ -162,10 +162,6 @@ namespace NeonRattie.Rat
         {
             var hits = Physics.OverlapBox(position, RatCollider.bounds.extents * 0.5f, transform.rotation,
                 surface);
-            for (int i = 0; i < hits.Length; i++)
-            {
-                Debug.Log(hits[i]);
-            }
             var success = hits.Length == 0;
             if (success)
             {
