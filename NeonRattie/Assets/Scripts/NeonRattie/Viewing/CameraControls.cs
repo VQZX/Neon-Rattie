@@ -25,7 +25,13 @@ namespace NeonRattie.Viewing
         [SerializeField]
         protected LayerMask groundLayer;
 
-        [SerializeField] protected float slerpAmount = 0.5f;
+        [SerializeField]
+        protected float translationSpeed = 1;
+
+        [SerializeField]
+        protected float maxRotationModifier = 5;
+
+        protected float maxRotation = 10;
 
         private Vector3 initDirectionToRat;
 
@@ -35,7 +41,9 @@ namespace NeonRattie.Viewing
 
         private Vector3 originalRot;
 
-        protected float slerpTime;
+        protected float lerpTime = 0;
+
+        protected float slerpTime = 0;
 
         public Vector3 GetFlatRight ()
         {
@@ -61,14 +69,19 @@ namespace NeonRattie.Viewing
             originalRot = transform.rotation.eulerAngles;
         }
 
-        protected virtual void LateUpdate()
-        {
-            FreeControl();
+        protected virtual void Update()
+        {   
+            FreeControl(Time.deltaTime);
         }
 
-        protected void FreeControl()
+        protected void FreeControl(float deltaTime)
         {
-            transform.position = Vector3.Lerp(transform.position, SumMotion(), Time.deltaTime * followData.PitchRotation);
+            transform.position = Vector3.Lerp(transform.position, SumMotion(), translationSpeed);
+            Rotation();
+        }
+
+        private void Rotation()
+        {
             MouseManager mm;
             if (!MouseManager.TryGetInstance(out mm))
             {
@@ -82,24 +95,28 @@ namespace NeonRattie.Viewing
             //so we only need vertically
             //HACK: we will have to add independant, decoupled horizontal motion
 
-            Vector2 delta = mm.Delta;
+            Vector2 delta = mm.DistanceFromOrigin;
             //never do them at the same time!
             var axis = Mathf.Abs(delta.y) < Mathf.Abs(delta.x) ? new Vector3(0, delta.x) : new Vector3(-delta.y, 0);
+            Quaternion deltaRotation = Quaternion.AngleAxis(freeControl.RotationSpeed * delta.magnitude, axis);
             if (Math.Abs(axis.y) < 0.001f)
             {
                 Quaternion rot = transform.rotation;
-                rot *= Quaternion.AngleAxis(freeControl.RotationSpeed * delta.magnitude, axis);
+                rot *= deltaRotation;
                 if (VerticalValid(rot))
                 {
                     return;
                 }
             }
-            Quaternion nextRot = transform.rotation * Quaternion.AngleAxis(freeControl.RotationSpeed * delta.magnitude, axis);
+            Quaternion nextRot = transform.rotation * deltaRotation;
             Vector3 currentRot = nextRot.eulerAngles;
             currentRot.z = originalRot.z;
             Quaternion next = new Quaternion {eulerAngles = currentRot};
-            transform.rotation = Quaternion.Slerp(transform.rotation, next, slerpAmount);
+            //transform.rotation = Quaternion.Slerp(transform.rotation, next, freeControl.RotationSpeed);
+            maxRotation = freeControl.RotationSpeed * delta.magnitude * maxRotationModifier;
+            transform.rotation = Quaternion.RotateTowards(transform.rotation, deltaRotation, maxRotation);
         }
+        
 
         private bool VerticalValid(Quaternion rotation)
         {
@@ -110,14 +127,15 @@ namespace NeonRattie.Viewing
             {
                 return heightDifference < freeControl.UpMovement;
             }
-            return Math.Abs(heightDifference) < freeControl.DownMovement;
+            return heightDifference < freeControl.DownMovement;
         }
 
         private Vector3 SumMotion()
         {
-            Vector3 sum = CorrectHeightFromGround(transform.position);
+            Vector3 sum = transform.position;
             sum = AlignWithRat(sum);
             sum = SlowLookAtRat(sum);
+            sum = CorrectHeightFromGround(sum);
             return sum;
         }
         
