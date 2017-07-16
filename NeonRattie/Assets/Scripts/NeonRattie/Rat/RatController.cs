@@ -8,6 +8,7 @@ using NeonRattie.Objects;
 using NeonRattie.Rat.Data;
 using NeonRattie.Rat.RatStates;
 using NeonRattie.Shared;
+using NeonRattie.Utility;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -97,6 +98,17 @@ namespace NeonRattie.Rat
         private Vector3 offsetRotation;
 
         public Vector3 LowestPoint { get; protected set; }
+
+
+        #region Rotation Data
+        protected Vector3 rotationAxis;
+        protected float rotationAngle;
+        protected float rotationTime = 0;
+        protected Updater rotationUpdater = new Updater();
+        #endregion
+        
+        
+        
 
         //TODO: right editor script so these can be configurable!
         public Vector3 ForwardDirection
@@ -273,6 +285,9 @@ namespace NeonRattie.Rat
             ratStateMachine.AddState(climb, climbing);
             ratStateMachine.AddState(jumpOff, jumpingOff);
             ratStateMachine.ChangeState(idle);
+            
+            //update helpers
+            rotationUpdater.Add(UpdateRotation);
         }
 
         /// <summary>
@@ -282,6 +297,8 @@ namespace NeonRattie.Rat
         /// <param name="axis"></param>
         public virtual void RotateRat(float angle, Vector3 axis)
         {
+            rotationAxis = axis;
+            rotationAngle = angle;
             transform.RotateAround(transform.position, axis, angle * rotationAngleMultiplier);
         }
 
@@ -315,6 +332,7 @@ namespace NeonRattie.Rat
         {
             ratStateMachine.Tick();
             ClimbValid();
+            rotationUpdater.Update(Time.deltaTime);
             if  (JumpBox != null )
             {
                 JumpBox.Select();
@@ -386,6 +404,15 @@ namespace NeonRattie.Rat
             WalkDirection += keyboard.CheckKey(player.Right) ? right : Vector3.zero;
             WalkDirection += keyboard.CheckKey(player.Left) ? -right : Vector3.zero;
             WalkDirection.Normalize();
+        }
+        
+        protected void UpdateRotation(float time)
+        {
+            Quaternion next = Quaternion.AngleAxis(rotationAngle * rotationAngleMultiplier, rotationAxis);
+            rotationTime += time;
+            rotationTime %= 1;
+            transform.rotation = Quaternion.RotateTowards(transform.rotation, next, rotationTime);
+
         }
     }
 }

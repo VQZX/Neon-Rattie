@@ -108,13 +108,12 @@ namespace NeonRattie.Viewing
                     return;
                 }
             }
-            Quaternion nextRot = transform.rotation * deltaRotation;
+            Quaternion nextRot = deltaRotation;
             Vector3 currentRot = nextRot.eulerAngles;
             currentRot.z = originalRot.z;
             Quaternion next = new Quaternion {eulerAngles = currentRot};
-            //transform.rotation = Quaternion.Slerp(transform.rotation, next, freeControl.RotationSpeed);
             maxRotation = freeControl.RotationSpeed * delta.magnitude * maxRotationModifier;
-            transform.rotation = Quaternion.RotateTowards(transform.rotation, deltaRotation, maxRotation);
+            transform.rotation = Quaternion.RotateTowards(transform.rotation, next, maxRotation);
         }
         
 

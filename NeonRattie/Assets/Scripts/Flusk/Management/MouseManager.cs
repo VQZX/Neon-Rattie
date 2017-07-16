@@ -33,6 +33,13 @@ namespace Flusk.Management
             angle = Mathf.Atan2(difference.y, difference.x);
         }
 
+        public bool IsMouseOffScreen()
+        {
+            return ScreenPosition.x < 0 || ScreenPosition.y < 0 || ScreenPosition.x > Screen.width ||
+                   ScreenPosition.y > Screen.height;
+        }
+        
+
         protected virtual void Start()
         {
             ScreenPosition = Input.mousePosition;
