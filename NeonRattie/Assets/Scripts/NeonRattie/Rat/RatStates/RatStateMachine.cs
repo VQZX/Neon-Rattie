@@ -15,8 +15,6 @@ namespace NeonRattie.Rat.RatStates
         /// </summary>
         public Action<RatActionStates, RatActionStates> stateChanged;
 
-        //states
-
         public void Init(RatBrain rat)
         {
             ratBrain = rat;

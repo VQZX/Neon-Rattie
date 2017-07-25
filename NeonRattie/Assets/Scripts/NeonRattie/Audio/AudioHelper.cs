@@ -1,11 +1,12 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 namespace NeonRattie.Audio
 {
     public static class AudioHelper
     {
         
-        public static AudioSource FindAvailableAudioSource(AudioSource[] sources)
+        public static AudioSource FindAvailableAudioSource(List<AudioSource> sources)
         {
             foreach (AudioSource source in sources)
             {
@@ -17,7 +18,7 @@ namespace NeonRattie.Audio
             return null;
         }
 
-        public static bool IsClipPlaying(AudioSource[] sources, AudioClip clip)
+        public static bool IsClipPlaying(List<AudioSource> sources, AudioClip clip)
         {
             foreach (AudioSource source in sources)
             {

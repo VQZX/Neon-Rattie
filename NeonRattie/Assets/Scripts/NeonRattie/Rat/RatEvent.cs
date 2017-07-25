@@ -1,54 +1,33 @@
 ﻿using System;
-using System.Collections.Generic;
-using NeonRattie.Rat;
 using NeonRattie.Rat.RatStates;
 using UnityEngine;
+using UnityEngine.Events;
 
-namespace NeonRattie.Audio
+namespace NeonRattie.Rat
 {
-    public class RatAudio : MonoBehaviour
+    public class RatEvent : MonoBehaviour
     {
+
         [SerializeField]
-        protected RatController controller;
+        protected UnityEvent idle;
         
-        /// <summary>
-        /// List of audio sources attached to this object
-        /// </summary>
         [SerializeField]
-        protected List<AudioSource> audioSources;
+        protected UnityEvent walk;
+        
+        [SerializeField]
+        protected UnityEvent run;
+        
+        [SerializeField]
+        protected UnityEvent jump;
+        
+        [SerializeField]
+        protected UnityEvent jumpOff;
+        
+        [SerializeField]
+        protected UnityEvent climb;
+        
 
-
-        public void Play(AudioClip clip)
-        {
-            var source = AudioHelper.FindAvailableAudioSource(audioSources);
-            source.clip = clip;
-            source.Play();
-        }
-
-        public void Play(AudioClip clip, bool loop)
-        {
-            var source = AudioHelper.FindAvailableAudioSource(audioSources);
-            source.clip = clip;
-            source.loop = loop;
-            source.Play();
-        }
-
-        public void CancelNonLoopingAudio()
-        {
-            var nonLooping = audioSources.FindAll(a => a.loop );
-            foreach (var audioSource in nonLooping)
-            {
-                audioSource.Stop();
-            }
-        }
-
-        public void CancelAllAudio()
-        {
-            foreach (var source in audioSources)
-            {
-                source.Stop();
-            }
-        }
+        private RatController controller;
 
         protected virtual void Awake()
         {
@@ -58,32 +37,32 @@ namespace NeonRattie.Audio
 
         public void PlayIdle()
         {
-            throw new NotImplementedException();
+            idle.Invoke();
         }
 
         public void PlayWalk()
         {
-            
+            walk.Invoke();
         }
 
         public void PlayRun()
         {
-            
+            run.Invoke();
         }
 
         public void PlayJump()
         {
-            
+            jump.Invoke();
         }
 
-        public void PlayClimp()
+        public void PlayClimb()
         {
-            
+            climb.Invoke();
         }
 
         public void PlayJumpOff()
         {
-            
+            jumpOff.Invoke();
         }
         
 
@@ -104,7 +83,7 @@ namespace NeonRattie.Audio
                     PlayJump();
                     break;
                 case RatActionStates.Climb:
-                    PlayClimp();
+                    PlayClimb();
                     break;
                 case RatActionStates.JumpOff:
                     PlayJumpOff();
