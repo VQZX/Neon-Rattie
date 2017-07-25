@@ -1,4 +1,5 @@
-﻿using Flusk.Utility;
+﻿using System;
+using Flusk.Utility;
 
 //aliases
 using RatBrain = NeonRattie.Rat.RatController;
@@ -9,11 +10,27 @@ namespace NeonRattie.Rat.RatStates
     {
         protected RatBrain ratBrain;
 
+        /// <summary>
+        /// An event for when the rat state changes
+        /// </summary>
+        public Action<RatActionStates, RatActionStates> stateChanged;
+
         //states
 
         public void Init(RatBrain rat)
         {
             ratBrain = rat;
+        }
+
+        public override void ChangeState(IState state)
+        {
+            var previousState = ((RatState) CurrentState).State;
+            var nextState = ((RatState) state).State;
+            base.ChangeState(state);
+            if (stateChanged != null)
+            {
+                stateChanged(previousState, nextState);
+            }
         }
     }
 }

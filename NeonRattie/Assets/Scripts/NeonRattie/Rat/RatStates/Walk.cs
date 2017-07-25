@@ -7,6 +7,12 @@ namespace NeonRattie.Rat.RatStates
 {
     public class Walk : RatState, IActionState
     {
+        public override RatActionStates State 
+        { 
+            get {return RatActionStates.Walk;}
+            protected set { }
+        }
+        
         public override void Enter(IState previousState)
         {
             base.Enter(previousState);
