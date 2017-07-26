@@ -8,6 +8,7 @@ using NeonRattie.Objects;
 using NeonRattie.Rat.Data;
 using NeonRattie.Rat.RatStates;
 using NeonRattie.Shared;
+using NeonRattie.Utility;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -36,6 +37,9 @@ namespace NeonRattie.Rat
         [SerializeField] protected Transform ratPosition;
 
         [SerializeField] protected LayerMask collisionMask;
+
+        [SerializeField]
+        protected MoveHelperState moveHelperState;
 
         public LayerMask CollisionMask
         {
@@ -95,7 +99,18 @@ namespace NeonRattie.Rat
 
         public Vector3 LowestPoint { get; protected set; }
 
-        //TODO: right editor script so these can be configurable!
+
+        #region Rotation Data
+        protected Vector3 rotationAxis;
+        protected float rotationAngle;
+        protected float rotationTime = 0;
+        protected Updater rotationUpdater = new Updater();
+        #endregion
+        
+        
+        
+
+        //TODO: write editor script so these can be configurable!
         public Vector3 ForwardDirection
         {
             get { return (Vector3.forward); }
@@ -162,10 +177,6 @@ namespace NeonRattie.Rat
         {
             var hits = Physics.OverlapBox(position, RatCollider.bounds.extents * 0.5f, transform.rotation,
                 surface);
-            for (int i = 0; i < hits.Length; i++)
-            {
-                Debug.Log(hits[i]);
-            }
             var success = hits.Length == 0;
             if (success)
             {
@@ -274,6 +285,9 @@ namespace NeonRattie.Rat
             ratStateMachine.AddState(climb, climbing);
             ratStateMachine.AddState(jumpOff, jumpingOff);
             ratStateMachine.ChangeState(idle);
+            
+            //update helpers
+            rotationUpdater.Add(UpdateRotation);
         }
 
         /// <summary>
@@ -283,6 +297,8 @@ namespace NeonRattie.Rat
         /// <param name="axis"></param>
         public virtual void RotateRat(float angle, Vector3 axis)
         {
+            rotationAxis = axis;
+            rotationAngle = angle;
             transform.RotateAround(transform.position, axis, angle * rotationAngleMultiplier);
         }
 
@@ -316,6 +332,7 @@ namespace NeonRattie.Rat
         {
             ratStateMachine.Tick();
             ClimbValid();
+            rotationUpdater.Update(Time.deltaTime);
             if  (JumpBox != null )
             {
                 JumpBox.Select();
@@ -387,6 +404,15 @@ namespace NeonRattie.Rat
             WalkDirection += keyboard.CheckKey(player.Right) ? right : Vector3.zero;
             WalkDirection += keyboard.CheckKey(player.Left) ? -right : Vector3.zero;
             WalkDirection.Normalize();
+        }
+        
+        protected void UpdateRotation(float time)
+        {
+            Quaternion next = Quaternion.AngleAxis(rotationAngle * rotationAngleMultiplier, rotationAxis);
+            rotationTime += time;
+            rotationTime %= 1;
+            transform.rotation = Quaternion.RotateTowards(transform.rotation, next, rotationTime);
+
         }
     }
 }

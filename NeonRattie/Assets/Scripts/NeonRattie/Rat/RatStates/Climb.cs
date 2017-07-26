@@ -27,6 +27,12 @@ namespace NeonRattie.Rat.RatStates
 
         private readonly Queue<Vector3> arcPositions = new Queue<Vector3>(100);
 
+        public override RatActionStates State
+        {
+            get { return RatActionStates.Climb;}
+            protected set { }
+        }
+
         public override void Enter (IState previousState )
         {
             Debug.Log("[CLIMB] Enter()");

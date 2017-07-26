@@ -1,4 +1,4 @@
-﻿using Assets.Scripts.Flusk.DataHelp;
+﻿using Flusk.DataHelp;
 using NeonRattie.Controls;
 using NeonRattie.Rat;
 using NeonRattie.Shared;
