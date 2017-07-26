@@ -50,9 +50,8 @@ namespace NeonRattie.Audio
             }
         }
 
-        protected virtual void Awake()
+        protected virtual void Awake ()
         {
-            controller = GetComponent<RatController>();
             controller.StateMachine.stateChanged += OnStateChanged;
         }
 
