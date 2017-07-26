@@ -15,11 +15,20 @@ namespace Flusk.Management
 
         protected Vector2 previousScreen;
 
+        private static readonly Vector2 ScreenViewCenter = new Vector2(0.5f, 5f);
+
         public void GetMotionData(out Vector3 euler, out float angle)
         {
             var rotationDelta = MouseManager.Instance.Delta;
             euler = new Vector3(-rotationDelta.y, rotationDelta.x);
             angle = Mathf.Atan2(euler.y, euler.x);
+        }
+
+        public void GetMotionDataStatic(out Vector3 euler, out float angle)
+        {
+            Vector2 difference = ViewPosition - ScreenViewCenter;
+            euler = new Vector3(-difference.y, difference.x);
+            angle = Mathf.Atan2(difference.y, difference.x);
         }
 
         protected virtual void Start()
@@ -30,11 +39,9 @@ namespace Flusk.Management
 
         protected virtual void Update()
         {
-            Delta = ((Vector2)Input.mousePosition) - ScreenPosition;
+            Delta = ((Vector2) Input.mousePosition) - ScreenPosition;
             ScreenPosition = Input.mousePosition;
             ViewPosition = Camera.main.ScreenToViewportPoint(ScreenPosition);
         }
-
-        
     }
 }

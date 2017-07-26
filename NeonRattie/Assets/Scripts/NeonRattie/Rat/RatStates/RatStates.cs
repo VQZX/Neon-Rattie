@@ -4,9 +4,9 @@
     {
         Idle,
         Walk,
-        Reverse,
         Run,
         Jump,
-        Climb
+        Climb,
+        JumpOff
     }
 }

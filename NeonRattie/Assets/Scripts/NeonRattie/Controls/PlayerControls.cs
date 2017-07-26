@@ -1,7 +1,7 @@
 ﻿using System;
-using System.ComponentModel;
 using Flusk.Controls;
 using Flusk.Patterns;
+using JetBrains.Annotations;
 using UnityEngine;
 
 namespace NeonRattie.Controls
@@ -10,7 +10,7 @@ namespace NeonRattie.Controls
     //mostly relays keypresses to certain actions
     public class PlayerControls : PersistentSingleton<PlayerControls>
     {
-        [SerializeField] protected KeyCode walkKey;
+        [SerializeField] protected KeyCode [] walkKey;
         [SerializeField] protected KeyCode reverseKey = KeyCode.S;
         [SerializeField] protected KeyCode runKey;
         [SerializeField] protected KeyCode jumpKey;
@@ -22,14 +22,23 @@ namespace NeonRattie.Controls
         [SerializeField] protected KeyCode screenShotKey;
 
         //some quick usages
+        [SerializeField]
         protected KeyCode forward = KeyCode.W;
-        public KeyCode Forward { get; protected set; }
+        public KeyCode Forward { get { return forward; }}
 
+        [SerializeField]
         protected KeyCode back = KeyCode.S;
-        public KeyCode Back { get; protected set; }
+        public KeyCode Back { get { return back; } }
+        
+        [SerializeField]
+        protected KeyCode left = KeyCode.A;
+        public KeyCode Left {get { return left; }}
+
+        [SerializeField] protected KeyCode right = KeyCode.D;
+        public KeyCode Right {get { return right; }}
 
         protected KeyCode jumpUp = KeyCode.Space;
-        public KeyCode JumpUp { get; protected set; }
+        public KeyCode JumpUp { get { return jumpUp; } }
 
         //float value to communicate any access amount
         //for "pressurised" speed
@@ -37,8 +46,6 @@ namespace NeonRattie.Controls
         public event Action<float> Run;
         public event Action<float> Jump;
         public event Action<float> Unwalk;
-        public event Action<float> Reverse;
-        public event Action<float> UnReverse;
 
         public event Action Pause;
         public event Action Exit;
@@ -64,7 +71,7 @@ namespace NeonRattie.Controls
 
         protected virtual void Start ()
         {
-            var kc = (KeyboardControls.Instance as KeyboardControls);
+            var kc = KeyboardControls.Instance;
             if (kc == null)
             {
                 return;
@@ -72,16 +79,12 @@ namespace NeonRattie.Controls
             kc.KeyHit += InvokeWalk;
             kc.KeyHit += InvokeRun;
             kc.KeyHit += InvokeJump;
-            kc.KeyHit += InvokeUnWalk;
-            kc.KeyHit += InvokeUnReverse;
-            kc.KeyHit += InvokeReverse;
-
-            
+            kc.KeyHit += InvokeUnWalk;   
         }
 
         protected virtual void OnDisable()
         {
-            var kc = (KeyboardControls.Instance as KeyboardControls);
+            var kc = KeyboardControls.Instance;
             if (kc == null)
             {
                 return;
@@ -110,7 +113,7 @@ namespace NeonRattie.Controls
 
         private void InvokeWalk(KeyData data)
         {
-            if (walkKey != data.Code || data.State == KeyState.Up)
+            if (!Contains(data.Code, walkKey) || data.State == KeyState.Up)
             {
                 return;
             }
@@ -119,29 +122,11 @@ namespace NeonRattie.Controls
 
         private void InvokeUnWalk(KeyData data)
         {
-            if (walkKey != data.Code || data.State != KeyState.Up)
+            if (!Contains(data.Code, walkKey) || data.State != KeyState.Up)
             {
                 return;
             }
             Invoke(Unwalk, data.AxisValue);
-        }
-
-        private void InvokeReverse(KeyData data)
-        {
-            if (reverseKey != data.Code || data.State != KeyState.Down)
-            {
-                return;
-            }
-            Invoke(Reverse, data.AxisValue);
-        }
-
-        private void InvokeUnReverse(KeyData data)
-        {
-            if (reverseKey != data.Code || data.State != KeyState.Up)
-            {
-                return;
-            }
-            Invoke(UnReverse, data.AxisValue);
         }
 
         private void InvokeRun(KeyData data)
@@ -162,6 +147,7 @@ namespace NeonRattie.Controls
             Invoke(Jump, data.AxisValue);
         }
 
+        [UsedImplicitly]
         private void InvokePause(KeyData data)
         {
             if (pauseKey != data.Code)
@@ -171,6 +157,7 @@ namespace NeonRattie.Controls
             Invoke(Pause);
         }
 
+        [UsedImplicitly]
         private void InvokeExit(KeyData data)
         {
             if (exitKey != data.Code)
@@ -178,6 +165,20 @@ namespace NeonRattie.Controls
                 return;
             }
             Invoke(Exit);
+        }
+        
+
+        private static bool Contains(KeyCode code, KeyCode[] codes)
+        {
+            int length = codes.Length;
+            for (int i = 0; i < length; i++)
+            {
+                if (codes[i] == code)
+                {
+                    return true;
+                }      
+            }
+            return false;
         }
     }
 }

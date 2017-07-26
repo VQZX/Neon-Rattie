@@ -1,4 +1,4 @@
-﻿using Flusk.Management;
+﻿using System;
 using Flusk.Utility;
 using NeonRattie.Controls;
 using UnityEngine;
@@ -11,30 +11,37 @@ namespace NeonRattie.Rat.RatStates
         {
             base.Enter(previousState);
             rat.RatAnimator.PlayWalk();
-            (PlayerControls.Instance as PlayerControls).Unwalk += OnUnWalk;
+            PlayerControls.Instance.Unwalk += OnUnWalk;
+            PlayerControls.Instance.Jump += OnJump;
         }
 
         public override void Tick()
         {
             base.Tick();
-            rat.TankControls();
-            PlayerControls pc = (PlayerControls.Instance as PlayerControls);
-            if (pc.CheckKey(pc.JumpUp))
+            if (Math.Abs(rat.WalkDirection.magnitude) < 0.001f)
             {
-                if (rat.ClimbValid())
-                {
-                    StateMachine.ChangeState(RatActionStates.Climb);
-                    return;
-                }
-                StateMachine.ChangeState(RatActionStates.Jump);
+                rat.ChangeState(RatActionStates.Idle);
+            }
+            rat.Walk(rat.WalkDirection);
+            rat.RotateController.SetLookDirection(rat.WalkDirection, Vector3.up, 0.9f);
+            FallTowards();
+            if (rat.ClimbValid())
+            {
+                rat.ChangeState(RatActionStates.Climb);
                 return;
             }
-            //otherwise
-            rat.WalkForward();
-            RatRotate();
+            if (rat.JumpOffValid())
+            {
+                rat.ChangeState(RatActionStates.JumpOff);
+            }
+            
         }
 
-
+        public override void Exit (IState nextState)
+        {
+            PlayerControls.Instance.Unwalk -= OnUnWalk;
+            PlayerControls.Instance.Jump -= OnJump;
+        }
 
         private void OnUnWalk(float x)
         {

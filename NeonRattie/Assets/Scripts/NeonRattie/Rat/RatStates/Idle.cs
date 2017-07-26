@@ -2,6 +2,7 @@
 using Flusk.Management;
 using Flusk.Utility;
 using NeonRattie.Controls;
+using UnityEngine;
 
 namespace NeonRattie.Rat.RatStates
 {
@@ -9,7 +10,7 @@ namespace NeonRattie.Rat.RatStates
     {
 
         public bool hasMovedMouse = false;
-        private float resetTime = 10;
+        private const float RESET_TIME = 10;
         private Timer searchTime;
 
         public override void Enter(IState previousState)
@@ -17,27 +18,24 @@ namespace NeonRattie.Rat.RatStates
             base.Enter(previousState);
             rat.RatAnimator.PlayIdle();
             PlayerControls.Instance.Walk += OnWalkPressed;
-            PlayerControls.Instance.Reverse += OnReversePressed;
+            PlayerControls.Instance.Jump += OnJump;
         }
 
         public override void Tick()
         {
             base.Tick();
-            rat.TankControls();
-            var pc = (PlayerControls.Instance as PlayerControls);
-            if (pc != null)
+            FallTowards();
+            RatRotate();
+            
+            var playerControls = PlayerControls.Instance;
+
+            if (playerControls.CheckKey(playerControls.Forward))
             {
-                if (pc.CheckKeyDown(pc.JumpUp))
-                {
-                    if (rat.ClimbValid())
-                    {
-                        StateMachine.ChangeState(RatActionStates.Climb);
-                        return;
-                    }
-                    StateMachine.ChangeState(RatActionStates.Jump);
-                    return;
-                }
+                rat.ChangeState(RatActionStates.Walk);
+                Debug.Log("[IDLE] Change To walk");
+                return;
             }
+            
             if (MouseManager.Instance == null)
             {
                 return;
@@ -46,8 +44,12 @@ namespace NeonRattie.Rat.RatStates
             {
                 return;
             }
-            rat.RatAnimator.PlaySearchingIdle();
-            searchTime = new Timer(resetTime, UndoSearch);
+            StartSearch();
+            if (searchTime != null)
+            {
+                searchTime.Tick(Time.deltaTime);
+            }
+            
         }
 
         private void UndoSearch ()
@@ -56,10 +58,20 @@ namespace NeonRattie.Rat.RatStates
             rat.RatAnimator.PlayIdle();
         }
 
+        private void StartSearch()
+        {
+            if (searchTime != null)
+            {
+                return;
+            }
+            rat.RatAnimator.PlaySearchingIdle();
+            searchTime = new Timer(RESET_TIME, UndoSearch);
+        }
+
         public override void Exit(IState previousState)
         {
             PlayerControls.Instance.Walk -= OnWalkPressed;
-            PlayerControls.Instance.Reverse -= OnReversePressed;
+            PlayerControls.Instance.Jump -= OnJump;
 
         }
 
@@ -69,11 +81,6 @@ namespace NeonRattie.Rat.RatStates
             {
                 StateMachine.ChangeState(RatActionStates.Walk);
             }
-        }
-
-        private void OnReversePressed(float axis)
-        {
-            StateMachine.ChangeState(RatActionStates.Reverse);
         }
     }
 }

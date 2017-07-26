@@ -5,25 +5,25 @@ namespace NeonRattie.Rat.RatStates
 {
     public class Jump : RatState, IActionState
     {
-        private float stateTime = 0;
-        private Vector3 groundPosition;
+        private float stateTime;
 
         public override void Enter(IState previousState)
         {
             base.Enter(previousState);
             rat.RatAnimator.PlayJump();
             stateTime = 0;
-            groundPosition = rat.transform.position;
+            GetGroundData();
         }
 
         public override void Tick()
         {
             base.Tick();
-            
             JumpCalculation();
-            int length = rat.JumpAnimationCurve.length;
-            bool passed = rat.JumpAnimationCurve[length - 1].time <= stateTime;
-            if ( passed || rat.IsGrounded() )
+            rat.Walk(rat.WalkDirection);
+            stateTime += Time.deltaTime;
+            int length = rat.JumpArc.length;
+            bool passed = rat.JumpArc[length - 1].time <= stateTime;
+            if ( passed )
             {
                 StateMachine.ChangeState(RatActionStates.Idle);
             }
@@ -31,11 +31,9 @@ namespace NeonRattie.Rat.RatStates
 
         private void JumpCalculation()
         {
-            Vector3 force = rat.Gravity;
-            float jumpMultiplier = rat.JumpAnimationCurve.Evaluate(stateTime);
-            force += (rat.JumpForce * -rat.Gravity.normalized * jumpMultiplier);
-            rat.transform.position = groundPosition + force;
-            stateTime += Time.deltaTime;
+            float jumpMultiplier = rat.JumpArc.Evaluate(stateTime);
+            Vector3 force = (rat.JumpForce * -rat.Gravity.normalized * jumpMultiplier);
+            rat.TryMove(rat.GetGroundData().point + force);
         }
     }
 }
