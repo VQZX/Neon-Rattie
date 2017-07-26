@@ -25,7 +25,7 @@ namespace Flusk.Utility
             CurrentState.Tick();
         }
 
-        public void ChangeState(IState state)
+        public virtual void ChangeState(IState state)
         {
             var previousState = CurrentState;
             if ( CurrentState != null )

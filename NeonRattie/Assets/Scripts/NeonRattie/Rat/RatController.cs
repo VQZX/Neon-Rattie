@@ -110,7 +110,7 @@ namespace NeonRattie.Rat
         
         
 
-        //TODO: right editor script so these can be configurable!
+        //TODO: write editor script so these can be configurable!
         public Vector3 ForwardDirection
         {
             get { return (Vector3.forward); }

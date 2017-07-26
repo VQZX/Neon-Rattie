@@ -13,6 +13,12 @@ namespace NeonRattie.Rat.RatStates
         private const float RESET_TIME = 10;
         private Timer searchTime;
 
+        public override RatActionStates State 
+        { 
+            get {return RatActionStates.Idle;}
+            protected set { }
+        }
+
         public override void Enter(IState previousState)
         {
             base.Enter(previousState);
