@@ -8,6 +8,7 @@ namespace NeonRattie.Rat.RatStates
     //TODO: LOTS OF SIMILARITIES WITH Climb.cs
     public class JumpOff : RatState, IActionState
     {
+       
         private const int RAT_LENGTHS_AHEAD = 3;
         private const float NEGLIGIBLE_DISTANCE = 0.0000001f;
         private Vector3 forwardPoint;
@@ -16,6 +17,12 @@ namespace NeonRattie.Rat.RatStates
         private Vector3 initialPoint;
         private Vector3 flatDirection;
         private Vector4 goal;
+        
+        public override RatActionStates State 
+        { 
+            get {return RatActionStates.JumpOff;}
+            protected set { }
+        }
 
         private readonly Queue<Vector3> arcPositions = new Queue<Vector3>(100);
         private Vector3[] drawPositions;

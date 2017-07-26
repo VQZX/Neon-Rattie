@@ -5,10 +5,12 @@ using RatBrain = NeonRattie.Rat.RatController;
 
 namespace NeonRattie.Rat.RatStates
 {
-    public class RatState : IState
+    public abstract class RatState : IState
     {
         public RatStateMachine StateMachine { get; set; }
-
+        
+        public abstract RatActionStates State { get; protected set; }
+        
         protected RatBrain rat;
         protected Vector3 groundPosition;
 
@@ -20,22 +22,18 @@ namespace NeonRattie.Rat.RatStates
 
         public virtual void Enter(IState previousState)
         {
-            
         }
 
         public virtual void Exit(IState nextState)
-        {
-            
+        {   
         }
 
         public virtual void Tick()
-        {
-            
+        {     
         }
 
         public virtual void Tick(RatStateMachine stateMachine)
-        {
-            
+        {  
         }
 
         protected void RatRotate()
