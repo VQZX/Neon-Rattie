@@ -412,7 +412,6 @@ namespace NeonRattie.Rat
             rotationTime += time;
             rotationTime %= 1;
             transform.rotation = Quaternion.RotateTowards(transform.rotation, next, rotationTime);
-
         }
     }
 }
