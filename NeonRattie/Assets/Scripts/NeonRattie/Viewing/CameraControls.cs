@@ -26,7 +26,7 @@ namespace NeonRattie.Viewing
         protected LayerMask groundLayer;
 
         [SerializeField]
-        protected float translationSpeed = 1;
+        protected float speed = 1;
 
         [SerializeField]
         protected float maxRotationModifier = 5;
@@ -76,8 +76,38 @@ namespace NeonRattie.Viewing
 
         protected void FreeControl(float deltaTime)
         {
-            transform.position = Vector3.Lerp(transform.position, SumMotion(), translationSpeed);
-            Rotation();
+            transform.position = Vector3.Lerp(transform.position, SumMotion(), Time.deltaTime * speed);
+            //Rotation();
+            AxisRotation();
+        }
+
+        private void AxisRotation()
+        {
+            MouseManager mm;
+            if (!MouseManager.TryGetInstance(out mm))
+            {
+                return;
+            }
+            Vector3 delta = mm.ExpandedAxis;
+            var axis = Mathf.Abs(delta.y) < Mathf.Abs(delta.x) ? new Vector3(0, delta.x) : new Vector3(-delta.y, 0);
+            Quaternion deltaRotation = Quaternion.AngleAxis(freeControl.RotationSpeed * delta.magnitude, axis);
+            if (Math.Abs(axis.y) < 0.001f)
+            {
+                Quaternion rot = transform.rotation;
+                rot *= deltaRotation;
+                if (VerticalValid(rot))
+                {
+                    return;
+                }
+            }
+            Quaternion next = transform.rotation * deltaRotation;
+            Vector3 keepZ = next.eulerAngles;
+            keepZ.z = transform.eulerAngles.z;
+            next.eulerAngles = keepZ;
+            transform.rotation = Quaternion.Slerp(transform.rotation, next, Time.deltaTime * 5);
+            Vector3 euler = transform.eulerAngles;
+            euler.z = 0;
+            transform.eulerAngles = euler;
         }
 
         private void Rotation()
@@ -87,9 +117,6 @@ namespace NeonRattie.Viewing
             {
                 return;
             }
-            Vector3 euler;
-            float angle;
-            mm.GetMotionData(out euler, out angle);
 
             //the rat takes care of itself horizontally
             //so we only need vertically
@@ -97,6 +124,11 @@ namespace NeonRattie.Viewing
 
             Vector2 delta = mm.DistanceFromOrigin;
             //never do them at the same time!
+            RotateByDelta(delta);
+        }
+
+        private void RotateByDelta(Vector3 delta)
+        {
             var axis = Mathf.Abs(delta.y) < Mathf.Abs(delta.x) ? new Vector3(0, delta.x) : new Vector3(-delta.y, 0);
             Quaternion deltaRotation = Quaternion.AngleAxis(freeControl.RotationSpeed * delta.magnitude, axis);
             if (Math.Abs(axis.y) < 0.001f)
