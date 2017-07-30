@@ -76,7 +76,7 @@ namespace NeonRattie.Viewing
 
         protected void FreeControl(float deltaTime)
         {
-            transform.position = Vector3.Lerp(transform.position, SumMotion(), speed);
+            transform.position = Vector3.Lerp(transform.position, SumMotion(), Time.deltaTime * speed);
             //Rotation();
             AxisRotation();
         }
