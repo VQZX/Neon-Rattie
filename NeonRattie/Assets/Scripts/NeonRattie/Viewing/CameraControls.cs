@@ -45,6 +45,8 @@ namespace NeonRattie.Viewing
 
         protected float slerpTime = 0;
 
+        private Collider avoidCollider;
+
         public Vector3 GetFlatRight ()
         {
             Vector3 right = transform.right;
@@ -72,12 +74,12 @@ namespace NeonRattie.Viewing
         protected virtual void Update()
         {   
             FreeControl(Time.deltaTime);
+            //AvoidCollider();
         }
 
         protected void FreeControl(float deltaTime)
         {
             transform.position = Vector3.Lerp(transform.position, SumMotion(), Time.deltaTime * speed);
-            //Rotation();
             AxisRotation();
         }
 
@@ -110,6 +112,19 @@ namespace NeonRattie.Viewing
             transform.eulerAngles = euler;
         }
 
+        private void AvoidCollider()
+        {
+            if (avoidCollider == null)
+            {
+                return;
+            }
+            Vector3 point = avoidCollider.ClosestPointOnBounds(transform.position);
+            Vector3 direction = (transform.position - point).normalized;
+            transform.position += direction;
+
+        }
+        
+        //leave arounnd for now
         private void Rotation()
         {
             MouseManager mm;
@@ -204,6 +219,16 @@ namespace NeonRattie.Viewing
             Vector3 newForward = rotation * Vector3.forward;
             Vector3 newPosition = transform.position + newForward * followData.DistanceFromPlayer;
             return newPosition;
+        }
+
+        protected virtual void OnTriggerEnter(Collider otherCollider)
+        {
+            avoidCollider = otherCollider;
+        }
+
+        protected virtual void OnTriggerExit(Collider otherCollider)
+        {
+            avoidCollider = null;
         }
     }
 }
