@@ -13,11 +13,14 @@ namespace Flusk.Management
         public Vector2 ScreenPosition { get; protected set; }
         public Vector2 ViewPosition { get; protected set; }
         public Vector2 DistanceFromOrigin { get; protected set; }
+        public Vector2 Velocity { get; protected set; }
+        public Vector2 MouseAxis { get; protected set; }
+        public Vector2 ExpandedAxis { get; protected set; }
 
         protected Vector2 previousScreen;
 
         private static readonly Vector2 ScreenViewCenter = new Vector2(0.5f, 5f);
-        private Vector2 origin = new Vector2(Screen.width * 0.5f, Screen.height * 0.5f);
+        private readonly Vector2 origin = new Vector2(Screen.width * 0.5f, Screen.height * 0.5f);
 
         public void GetMotionData(out Vector3 euler, out float angle)
         {
@@ -52,7 +55,10 @@ namespace Flusk.Management
             ScreenPosition = Input.mousePosition;
             ViewPosition = Camera.main.ScreenToViewportPoint(ScreenPosition);
             DistanceFromOrigin = ScreenPosition - origin;
+            Velocity = Delta / Time.deltaTime;
 
+            MouseAxis = new Vector2(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"));
+            ExpandedAxis = new Vector2(MouseAxis.x * Screen.width, MouseAxis.y * Screen.height);
         }
     }
 }

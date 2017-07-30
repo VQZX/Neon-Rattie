@@ -299,7 +299,7 @@ namespace NeonRattie.Rat
         {
             rotationAxis = axis;
             rotationAngle = angle;
-            transform.RotateAround(transform.position, axis, angle * rotationAngleMultiplier);
+            //transform.RotateAround(transform.position, axis, angle * rotationAngleMultiplier);
         }
 
         public virtual void RotateRat(float angle)
