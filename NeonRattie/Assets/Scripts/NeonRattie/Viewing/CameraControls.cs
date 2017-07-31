@@ -73,12 +73,7 @@ namespace NeonRattie.Viewing
 
         protected virtual void Update()
         {   
-            FreeControl(Time.deltaTime);
-            //AvoidCollider();
-        }
-
-        protected void FreeControl(float deltaTime)
-        {
+            RealignToRat();
             transform.position = Vector3.Lerp(transform.position, SumMotion(), Time.deltaTime * speed);
             AxisRotation();
         }
@@ -111,57 +106,6 @@ namespace NeonRattie.Viewing
             euler.z = 0;
             transform.eulerAngles = euler;
         }
-
-        private void AvoidCollider()
-        {
-            if (avoidCollider == null)
-            {
-                return;
-            }
-            Vector3 point = avoidCollider.ClosestPointOnBounds(transform.position);
-            Vector3 direction = (transform.position - point).normalized;
-            transform.position += direction;
-
-        }
-        
-        //leave arounnd for now
-        private void Rotation()
-        {
-            MouseManager mm;
-            if (!MouseManager.TryGetInstance(out mm))
-            {
-                return;
-            }
-
-            //the rat takes care of itself horizontally
-            //so we only need vertically
-            //HACK: we will have to add independant, decoupled horizontal motion
-
-            Vector2 delta = mm.DistanceFromOrigin;
-            //never do them at the same time!
-            RotateByDelta(delta);
-        }
-
-        private void RotateByDelta(Vector3 delta)
-        {
-            var axis = Mathf.Abs(delta.y) < Mathf.Abs(delta.x) ? new Vector3(0, delta.x) : new Vector3(-delta.y, 0);
-            Quaternion deltaRotation = Quaternion.AngleAxis(freeControl.RotationSpeed * delta.magnitude, axis);
-            if (Math.Abs(axis.y) < 0.001f)
-            {
-                Quaternion rot = transform.rotation;
-                rot *= deltaRotation;
-                if (VerticalValid(rot))
-                {
-                    return;
-                }
-            }
-            Quaternion nextRot = deltaRotation;
-            Vector3 currentRot = nextRot.eulerAngles;
-            currentRot.z = originalRot.z;
-            Quaternion next = new Quaternion {eulerAngles = currentRot};
-            maxRotation = freeControl.RotationSpeed * delta.magnitude * maxRotationModifier;
-            transform.rotation = Quaternion.RotateTowards(transform.rotation, next, maxRotation);
-        }
         
 
         private bool VerticalValid(Quaternion rotation)
@@ -179,8 +123,6 @@ namespace NeonRattie.Viewing
         private Vector3 SumMotion()
         {
             Vector3 sum = transform.position;
-            sum = AlignWithRat(sum);
-            sum = SlowLookAtRat(sum);
             sum = CorrectHeightFromGround(sum);
             return sum;
         }
@@ -202,16 +144,22 @@ namespace NeonRattie.Viewing
             Vector3 look = lookingRay.GetPoint(followData.DistanceFromPlayer);
             Vector3 ratLook = ratRay.GetPoint(followData.DistanceFromPlayer);
             var avg = new Vector3(ratLook.x, look.y, ratLook.z);
-            Vector3 current = pos;
-            return Vector3.Lerp(current, avg, Time.deltaTime * 10);
+            return avg;
+        }
+
+        private void RealignToRat()
+        {
+            Ray currentCameraRay = new Ray(transform.position, transform.forward);
+            Vector3 point = currentCameraRay.GetPoint(followData.DistanceFromPlayer);
+            Vector3 difference = rat.transform.position - point;
+            transform.position += difference;
+            transform.position = CorrectHeightFromGround(transform.position);
         }
 
         private Vector3 SlowLookAtRat (Vector3 pos)
         {
             Vector3 idealPlayerPosition = CalculatePositionByRotation(transform.rotation);
-            Vector3 difference = (rat.transform.position - idealPlayerPosition);
-            pos += difference;
-            return pos;
+            return idealPlayerPosition;
         }
 
         private Vector3 CalculatePositionByRotation(Quaternion rotation)
