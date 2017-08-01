@@ -347,7 +347,6 @@ namespace NeonRattie.Rat
         {
             UpdateVelocity(Time.deltaTime);
             FindLowestPoint();
-            WalkDirection = Vector3.zero;
         }
         
 
