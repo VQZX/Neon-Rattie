@@ -1,5 +1,6 @@
 ﻿using System;
 using Flusk.Management;
+using Flusk.Structures;
 using NeonRattie.Controls;
 using NeonRattie.Rat;
 using UnityEngine;
@@ -26,10 +27,22 @@ namespace NeonRattie.Viewing
         protected LayerMask groundLayer;
 
         [SerializeField]
-        protected float translationSpeed = 1;
+        protected float speed = 1;
 
         [SerializeField]
-        protected float maxRotationModifier = 5;
+        protected float rotationSlerpSpeed = 5;
+
+        [SerializeField]
+        protected float maxAngleRoation = 100;
+
+        [SerializeField]
+        protected float orbitSpeed = 10;
+
+        [SerializeField]
+        protected Range xRange;
+
+        [SerializeField]
+        protected Range yRange;
 
         protected float maxRotation = 10;
 
@@ -38,12 +51,6 @@ namespace NeonRattie.Viewing
         private Vector3 speedTest;
 
         private Vector3 idleForward;
-
-        private Vector3 originalRot;
-
-        protected float lerpTime = 0;
-
-        protected float slerpTime = 0;
 
         public Vector3 GetFlatRight ()
         {
@@ -66,39 +73,31 @@ namespace NeonRattie.Viewing
                 rat = SceneManagement.Instance.Rat;
             }
             initDirectionToRat = (rat.transform.position - transform.position).normalized;
-            originalRot = transform.rotation.eulerAngles;
         }
 
         protected virtual void Update()
         {   
-            FreeControl(Time.deltaTime);
+            AxisRotation();
+            RealignToRat();
         }
 
-        protected void FreeControl(float deltaTime)
-        {
-            transform.position = Vector3.Lerp(transform.position, SumMotion(), translationSpeed);
-            Rotation();
-        }
-
-        private void Rotation()
+        private void AxisRotation()
         {
             MouseManager mm;
             if (!MouseManager.TryGetInstance(out mm))
             {
                 return;
             }
-            Vector3 euler;
-            float angle;
-            mm.GetMotionData(out euler, out angle);
-
-            //the rat takes care of itself horizontally
-            //so we only need vertically
-            //HACK: we will have to add independant, decoupled horizontal motion
-
-            Vector2 delta = mm.DistanceFromOrigin;
-            //never do them at the same time!
-            var axis = Mathf.Abs(delta.y) < Mathf.Abs(delta.x) ? new Vector3(0, delta.x) : new Vector3(-delta.y, 0);
-            Quaternion deltaRotation = Quaternion.AngleAxis(freeControl.RotationSpeed * delta.magnitude, axis);
+            Vector3 delta = mm.ExpandedAxis;
+            if (delta.magnitude <= float.Epsilon)
+            {
+                return;
+            }
+            var axis = Mathf.Abs(delta.y) < Mathf.Abs(delta.x) ? 
+                new Vector3(0, Mathf.Clamp(delta.x, xRange.Min, xRange.Max)) : 
+                new Vector3(Mathf.Clamp(-delta.y, yRange.Min, yRange.Max), 0);
+            float angle = Mathf.Clamp(freeControl.RotationSpeed * delta.magnitude, 0, maxAngleRoation);
+            Quaternion deltaRotation = Quaternion.AngleAxis(angle, axis);
             if (Math.Abs(axis.y) < 0.001f)
             {
                 Quaternion rot = transform.rotation;
@@ -108,12 +107,12 @@ namespace NeonRattie.Viewing
                     return;
                 }
             }
-            Quaternion nextRot = deltaRotation;
-            Vector3 currentRot = nextRot.eulerAngles;
-            currentRot.z = originalRot.z;
-            Quaternion next = new Quaternion {eulerAngles = currentRot};
-            maxRotation = freeControl.RotationSpeed * delta.magnitude * maxRotationModifier;
-            transform.rotation = Quaternion.RotateTowards(transform.rotation, next, maxRotation);
+            Quaternion next = transform.rotation * deltaRotation;
+            transform.rotation = Quaternion.Slerp(transform.rotation, next, Time.deltaTime * rotationSlerpSpeed);
+            //ensure no z-rotation
+            Vector3 euler = transform.eulerAngles;
+            euler.z = 0;
+            transform.eulerAngles = euler;
         }
         
 
@@ -129,17 +128,6 @@ namespace NeonRattie.Viewing
             return heightDifference < freeControl.DownMovement;
         }
 
-        private Vector3 SumMotion()
-        {
-            Vector3 sum = transform.position;
-            sum = AlignWithRat(sum);
-            sum = SlowLookAtRat(sum);
-            sum = CorrectHeightFromGround(sum);
-            return sum;
-        }
-        
-
-
         private Vector3 CorrectHeightFromGround(Vector3 pos)
         {
             Vector3 ratPos = rat.RatPosition.transform.position;
@@ -147,25 +135,16 @@ namespace NeonRattie.Viewing
             return pos;
         }
 
-        private Vector3 AlignWithRat(Vector3 pos)
+
+        private void RealignToRat()
         {
-            //CorrectHeightFromGround();
-            Ray lookingRay = new Ray(rat.RatPosition.position, -initDirectionToRat);
-            Ray ratRay = new Ray(rat.RatPosition.position, -rat.LocalForward);
-            Vector3 look = lookingRay.GetPoint(followData.DistanceFromPlayer);
-            Vector3 ratLook = ratRay.GetPoint(followData.DistanceFromPlayer);
-            var avg = new Vector3(ratLook.x, look.y, ratLook.z);
-            Vector3 current = pos;
-            return Vector3.Lerp(current, avg, Time.deltaTime * 10);
+            Ray currentCameraRay = new Ray(transform.position, transform.forward);
+            Vector3 point = currentCameraRay.GetPoint(followData.DistanceFromPlayer);
+            Vector3 difference = rat.transform.position - point;
+            transform.position = Vector3.Slerp(transform.position, transform.position + difference, Time.deltaTime * orbitSpeed);
+            transform.position = CorrectHeightFromGround(transform.position);
         }
 
-        private Vector3 SlowLookAtRat (Vector3 pos)
-        {
-            Vector3 idealPlayerPosition = CalculatePositionByRotation(transform.rotation);
-            Vector3 difference = (rat.transform.position - idealPlayerPosition);
-            pos += difference;
-            return pos;
-        }
 
         private Vector3 CalculatePositionByRotation(Quaternion rotation)
         {

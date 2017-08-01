@@ -299,7 +299,7 @@ namespace NeonRattie.Rat
         {
             rotationAxis = axis;
             rotationAngle = angle;
-            transform.RotateAround(transform.position, axis, angle * rotationAngleMultiplier);
+            //transform.RotateAround(transform.position, axis, angle * rotationAngleMultiplier);
         }
 
         public virtual void RotateRat(float angle)
@@ -409,9 +409,10 @@ namespace NeonRattie.Rat
         protected void UpdateRotation(float time)
         {
             Quaternion next = Quaternion.AngleAxis(rotationAngle * rotationAngleMultiplier, rotationAxis);
+            next = transform.rotation * next;
             rotationTime += time;
             rotationTime %= 1;
-            transform.rotation = Quaternion.RotateTowards(transform.rotation, next, rotationTime);
+            transform.rotation = Quaternion.Slerp(transform.rotation, next, rotationTime);
         }
     }
 }

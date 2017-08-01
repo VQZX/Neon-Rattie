@@ -42,7 +42,7 @@ namespace NeonRattie.Rat.RatStates
             {
                 return;
             }
-            Vector2 delta = MouseManager.Instance.DistanceFromOrigin;
+            Vector2 delta = MouseManager.Instance.Delta;
             float deltaX = delta.x;
             Vector3 axis = Vector3.up;
             if (deltaX > 0)
