@@ -1,5 +1,4 @@
-﻿using System;
-using NeonRattie.Controls.TimeMovers;
+﻿using NeonRattie.Controls.TimeMovers;
 using UnityEngine;
 
 namespace NeonRattie.Rat

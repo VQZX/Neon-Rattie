@@ -1,13 +1,12 @@
 ﻿using Flusk.DataHelp;
 using NeonRattie.Controls;
 using NeonRattie.Rat;
-using NeonRattie.Shared;
 using UnityEngine;
 
 namespace NeonRattie.Objects
 {
     [RequireComponent(typeof(Rigidbody))]
-    public class JumpBox : NeonRattieBehaviour
+    public class JumpBox : MonoBehaviour
     {
         [SerializeField]
         protected LayerMask jumpLayer;
@@ -75,16 +74,6 @@ namespace NeonRattie.Objects
             }
             curve.Add(lastPoint);
             return curve;
-        }
-
-        public override void Destroy()
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public override void Initialise()
-        {
-            throw new System.NotImplementedException();
         }
 
         protected virtual void Awake ()

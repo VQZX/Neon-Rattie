@@ -7,7 +7,6 @@ using NeonRattie.Management;
 using NeonRattie.Objects;
 using NeonRattie.Rat.Data;
 using NeonRattie.Rat.RatStates;
-using NeonRattie.Shared;
 using NeonRattie.Utility;
 using UnityEngine;
 using UnityEngine.AI;
@@ -15,7 +14,7 @@ using UnityEngine.AI;
 namespace NeonRattie.Rat
 {
     [RequireComponent( typeof(RatAnimator))]
-    public class RatController : NeonRattieBehaviour, IMovable
+    public class RatController : MonoBehaviour, IMovable
     {
         [SerializeField] protected float walkSpeed = 10;
         [SerializeField] protected float runSpeed = 15;
@@ -108,8 +107,6 @@ namespace NeonRattie.Rat
         #endregion
         
         
-        
-
         //TODO: write editor script so these can be configurable!
         public Vector3 ForwardDirection
         {
@@ -291,28 +288,17 @@ namespace NeonRattie.Rat
         }
 
         /// <summary>
-        /// 
+        /// Sets the rats target rotation to angle, around an axis
         /// </summary>
-        /// <param name="angle"></param>
-        /// <param name="axis"></param>
         public virtual void RotateRat(float angle, Vector3 axis)
         {
             rotationAxis = axis;
             rotationAngle = angle;
-            //transform.RotateAround(transform.position, axis, angle * rotationAngleMultiplier);
         }
 
         public virtual void RotateRat(float angle)
         {
             RotateRat(angle, Vector3.up);
-        }
-
-        public override void Destroy()
-        {
-        }
-
-        public override void Initialise()
-        {
         }
 
         public void AddDrawGizmos (Action action)
